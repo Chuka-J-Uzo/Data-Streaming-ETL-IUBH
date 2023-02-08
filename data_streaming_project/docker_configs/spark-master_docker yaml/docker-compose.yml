@@ -7,7 +7,7 @@ services:
     container_name: spark-master
     restart: always
     ports:
-      - "8080:8080"
+      - "8180:8180"
       - "7077:7077"
     environment:
       - INIT_DAEMON_STEP=setup_spark

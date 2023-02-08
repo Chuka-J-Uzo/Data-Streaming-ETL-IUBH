@@ -1,9 +1,3 @@
-# Install confluent kafka python client
-pip install confluent-kafka
-
-# Do the same for mysql-connector to enable python talk to our MySQL DB
-pip install mysql-connector-python
-
 
 # install MySQL according to the linux debian currently running on codespaces (I got the image from https://hub.docker.com/_/mysql)
 $ docker pull mysql:8.0.32-debian
@@ -42,3 +36,12 @@ $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p
 $ ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic data-inflow-1
 
 
+# Install confluent kafka python client
+pip install confluent-kafka
+
+# Do the same for mysql-connector to enable python talk to our MySQL DB
+pip install mysql-connector-python
+
+
+# Now install Pyspark python client
+pip install pyspark
