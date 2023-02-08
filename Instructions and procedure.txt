@@ -1,0 +1,44 @@
+# Install confluent kafka python client
+pip install confluent-kafka
+
+# Do the same for mysql-connector to enable python talk to our MySQL DB
+pip install mysql-connector-python
+
+
+# install MySQL according to the linux debian currently running on codespaces (I got the image from https://hub.docker.com/_/mysql)
+$ docker pull mysql:8.0.32-debian
+
+# Starting our MySQL instance (find this command and details from https://hub.docker.com/_/mysql):
+$ docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root --restart always -d mysql:8.0.32-debian
+# above we called our container "MySQL_Container"
+
+
+# Now we install phpMyAdmin - A web interface for MySQL
+$ docker pull phpmyadmin:latest
+
+# After pully phpMyAdmin, next, we need to run a MySQL server in Docker, and then the phpMyAdmin image needs to be linked to the running database container like this:
+$ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p 8080:80 phpmyadmin
+# Notice that our running container name "MySQL_Container" will then be linked to our phpMyAdmin image by adding "--link MySQL_Container:db" be sure to put the db at the end.
+
+# activate your MySQL shell by right-clicking against the MySQL_Container which happens to be our MySQL server.
+   Then you'll see this prompt waiting for us to login to MySQL ---> root@a20370fbdbfc:/#  
+   Now type this into the shell to login. We use 'root' as username -u and 'root' as -p password. 
+   the command will look like this ---->    mysql -u root  -p
+
+   - Then we create a database to collect Kafka's producer messages. we will call the database "KAFKA_DB"
+      mysql> CREATE DATABASE KAFKA_DB;
+
+   - Then create a table inside this databse.
+     To do this, we use the "use" command on the created DB as follows:
+     mysql> use KAFKA_DB;
+
+     Then we create a Table using the schema or column names in the data we are trying to ingest. Our table is called "INGESTED_TABLE_1"
+     CREATE TABLE INGESTED_TABLE_1 (time float, seconds_elapsed float,  qz float, qy float, qx float, qw float, roll float, pitch float, yaw float);
+
+
+
+
+# Create a Kafka topic (right-click against the running Kafka broker or kafka server). We call it "data-inflow-1"
+$ ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic data-inflow-1
+
+
