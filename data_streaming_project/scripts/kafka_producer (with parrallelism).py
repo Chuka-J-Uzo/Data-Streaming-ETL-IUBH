@@ -3,6 +3,8 @@ import mysql.connector
 from confluent_kafka import Producer
 
 
+
+
 #p = Producer({'bootstrap.servers': '127.0.0.1:9092'})
 producers = [Producer({'bootstrap.servers': '127.0.0.1:9092',
               'acks': 'all',

@@ -3,8 +3,11 @@ import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-#import findspark
-#findspark.init()
+import findspark
+findspark.init()
+
+#import os
+#os.environ["HADOOP_CONF_DIR"] = "<path_to_hadoop_conf_dir>"
 
 
 
