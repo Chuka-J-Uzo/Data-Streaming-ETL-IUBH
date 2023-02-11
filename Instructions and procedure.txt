@@ -29,7 +29,10 @@ $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p
      Then we create a Table using the schema or column names in the data we are trying to ingest. Our table is called "INGESTED_TABLE_1"
      CREATE TABLE INGESTED_TABLE_1 (time float, seconds_elapsed float,  qz float, qy float, qx float, qw float, roll float, pitch float, yaw float);
 
+# FOR THOSE USING LOCAL MACHINES, After running MySQL on docker, and you are trying to enter mysql prompt, but you get this error, ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
 
+Just use the command below....replace with your container name and user name:
+sudo docker exec -it <container_name> mysql -u <user_name> -p
 
 
 # Create a Kafka topic (right-click against the running Kafka broker or kafka server). We call it "data-inflow-1"
