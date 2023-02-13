@@ -1,6 +1,6 @@
 import csv
-#import mysql.connector
 import pymysql
+from datetime import datetime
 from confluent_kafka import Producer
 
 
@@ -10,11 +10,8 @@ p = Producer({'bootstrap.servers': '127.0.0.1:9092',
               'queue.buffering.max.kbytes': 2000000,
               'compression.type': 'lz4',
               'compression.level': '6',
-              'security.protocol': 'PLAINTEXT',
-              'ssl.ca.location': 'data_streaming_project/ssl_certificates/ca.pem',
-              'ssl.certificate.location': 'data_streaming_project/ssl_certificates/cert.pem',
-              'ssl.key.location': 'data_streaming_project/ssl_certificates/key.pm'
-              })
+              'security.protocol': 'PLAINTEXT'
+               })
 
 #conn = mysql.connector.connect(user='root', password='root', host='172.17.0.3', database='KAFKA_DB')
 conn = pymysql.connect(

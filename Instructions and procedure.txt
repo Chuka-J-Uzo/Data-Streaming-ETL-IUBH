@@ -3,7 +3,8 @@
 $ docker pull mysql:8.0.32-debian
 
 # Starting our MySQL instance (find this command and details from https://hub.docker.com/_/mysql):
-$ docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root --restart always -d mysql:8.0.32-debian
+docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql:8.0.32-debian
+
 # above we called our container "MySQL_Container"
 
 
@@ -11,13 +12,16 @@ $ docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root --restart always
 $ docker pull phpmyadmin:latest
 
 # After pully phpMyAdmin, next, we need to run a MySQL server in Docker, and then the phpMyAdmin image needs to be linked to the running database container like this:
-$ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p 8080:80 phpmyadmin
+$ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p 8085:80 phpmyadmin
 # Notice that our running container name "MySQL_Container" will then be linked to our phpMyAdmin image by adding "--link MySQL_Container:db" be sure to put the db at the end.
 
 # activate your MySQL shell by right-clicking against the MySQL_Container which happens to be our MySQL server.
    Then you'll see this prompt waiting for us to login to MySQL ---> root@a20370fbdbfc:/#  
    Now type this into the shell to login. We use 'root' as username -u and 'root' as -p password. 
    the command will look like this ---->    mysql -u root  -p
+    
+   If that doesn't work, do this ------>     mysql --user=root --password=root 
+
 
    - Then we create a database to collect Kafka's producer messages. we will call the database "KAFKA_DB"
       mysql> CREATE DATABASE KAFKA_DB;
@@ -73,7 +77,7 @@ $ docker pull apache/superset:latest
 
 #2. Start a superset instance on port 8080
 
-$ docker run -d -p 8090:8088 --name superset apache/superset
+$ sudo docker run -d -p 8090:8088 --name superset apache/superset
 
 # i changed 8080:8088 port to 8090:8088 so it doesn't class with an existing container running on 80:80
 
@@ -83,7 +87,7 @@ $ docker run -d -p 8090:8088 --name superset apache/superset
 With my local superset container already running...
 
 Then I Setup my local admin account:
-$ docker exec -it superset superset fab create-admin \
+$ sudo docker exec -it superset superset fab create-admin \
               --username admin \
               --firstname Superset \
               --lastname Admin \
@@ -92,15 +96,15 @@ $ docker exec -it superset superset fab create-admin \
 
 #4. Now we should migrate local DB to latest
 
-$ docker exec -it superset superset db upgrade
+$ sudo docker exec -it superset superset db upgrade
 
 #5. Load Examples
 
-$ docker exec -it superset superset load_examples
+$ sudo docker exec -it superset superset load_examples
 
 #6. Setup roles
 
-$ docker exec -it superset superset init
+$ sudo docker exec -it superset superset init
 
 #7. Now, Login and take a look -- navigate to http://localhost:8090/login/ 
      use user: admin

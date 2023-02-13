@@ -1,8 +1,6 @@
 import csv
-import mysql.connector
+import pymysql
 from confluent_kafka import Producer
-
-
 
 
 #p = Producer({'bootstrap.servers': '127.0.0.1:9092'})
@@ -16,8 +14,13 @@ producers = [Producer({'bootstrap.servers': '127.0.0.1:9092',
 
 
 
-conn = mysql.connector.connect(user='root', password='root',
-                              host='172.17.0.3', database='KAFKA_DB')
+conn = pymysql.connect(
+    host='172.17.0.3',
+    user='root',
+    password='root',
+    db='KAFKA_DB'
+    )
+
 cursor = conn.cursor()
 
 def delivery_report(err, msg):
