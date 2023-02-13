@@ -4,6 +4,9 @@
 
 This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a file (CSV) source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
+![image](https://user-images.githubusercontent.com/95084188/218446337-c83e8779-ce42-4f0c-8db0-f55f88d4df17.png)
+
+
 ## Prerequisites
 
  1. Docker installed on local machine or cloud IDEs.
