@@ -1,0 +1,6 @@
+{
+    "workbench.commandPalette.experimental.suggestCommands": true,
+    "workbench.editor.autoLockGroups": {
+        "workbench.input.interactive": true
+    }
+}

@@ -33,6 +33,11 @@ $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p
 
 Just use the command below....replace with your container name and user name:
 sudo docker exec -it <container_name> mysql -u <user_name> -p
+                             OR 
+sudo docker exec -it MySQL_Container mysql -u root -p
+                             OR
+mysql --user=root --password=root
+
 
 
 # Create a Kafka topic (right-click against the running Kafka broker or kafka server). We call it "data-inflow-1"
@@ -48,3 +53,122 @@ pip install mysql-connector-python
 
 # Now install Pyspark python client
 pip install pyspark
+
+
+# How to start Kafka broker with a large memory allocation
+docker run -d -p 9092:9092 --restart=always  --memory=4g --memory-swap=4g confluentinc/cp-server:7.3.1
+
+kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic data-inflow-1
+
+#Print out my table to mysql terminal
+SELECT * FROM table_name;
+
+
+
+
+# INSTALL APACHE SUPERSET
+
+#1. Firstly, Docker pull Apache superset
+$ docker pull apache/superset:latest
+
+#2. Start a superset instance on port 8080
+
+$ docker run -d -p 8090:8088 --name superset apache/superset
+
+# i changed 8080:8088 port to 8090:8088 so it doesn't class with an existing container running on 80:80
+
+
+#3.Initialize a local Superset Instance
+
+With my local superset container already running...
+
+Then I Setup my local admin account:
+$ docker exec -it superset superset fab create-admin \
+              --username admin \
+              --firstname Superset \
+              --lastname Admin \
+              --email admin@superset.com \
+              --password admin
+
+#4. Now we should migrate local DB to latest
+
+$ docker exec -it superset superset db upgrade
+
+#5. Load Examples
+
+$ docker exec -it superset superset load_examples
+
+#6. Setup roles
+
+$ docker exec -it superset superset init
+
+#7. Now, Login and take a look -- navigate to http://localhost:8090/login/ 
+     use user: admin
+     use password: admin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import csv
+import mysql.connector
+from confluent_kafka import Producer
+
+p = Producer({'bootstrap.servers': '127.0.0.1:9092',
+              'acks': 'all',
+              'queue.buffering.max.messages': 1300000,
+              'queue.buffering.max.kbytes': 2000000,
+              'compression.type': 'lz4'
+              })
+
+conn = mysql.connector.connect(user='root', password='root',
+                              host='172.17.0.3', database='KAFKA_DB')
+cursor = conn.cursor()
+
+def delivery_report(err, msg):
+    if err is not None:
+        print('Message delivery failed: {}'.format(err))
+    else:
+        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+        data = msg.value().decode('utf-8')
+        values = data.split(',')
+        cursor.execute("INSERT INTO INGESTED_TABLE_1 (time, seconds_elapsed, qz,  qy,  qx,  qw,  roll, pitch, yaw) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
+        conn.commit()
+
+with open("data_streaming_project/datasets/Orientation.csv", "r") as file:
+    reader = csv.reader(file)
+    next(reader)
+    data_list = []
+    for i, row in enumerate(reader):
+        data = ",".join(row).encode('utf-8')
+        data_list.append(data)
+        if (i + 1) % 10000 == 0:
+            for data in data_list:
+                p.produce('data-inflow-1', data, callback=delivery_report)
+                p.poll(0)
+            data_list = []
+
+if data_list:
+    for data in data_list:
+        p.produce('data-inflow-1', data, callback=delivery_report)
+        p.poll(0)
+
+p.flush()
+conn.close()

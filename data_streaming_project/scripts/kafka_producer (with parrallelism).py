@@ -17,7 +17,7 @@ producers = [Producer({'bootstrap.servers': '127.0.0.1:9092',
 
 
 conn = mysql.connector.connect(user='root', password='root',
-                              host='172.17.0.2', database='KAFKA_DB')
+                              host='172.17.0.3', database='KAFKA_DB')
 cursor = conn.cursor()
 
 def delivery_report(err, msg):
