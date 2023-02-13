@@ -6,10 +6,10 @@ This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming 
 
 ## Prerequisites
 
- * Docker installed on local machine or cloud IDEs.
- * Basic knowledge of Apache Kafka, MySQL, Superset, containerization in-general and data visualization.
- * Understanding of real-time streaming data, message brokering, resource handling and its processing.
- * Linux OS makes life a lot easier. Avoid Windows OS when embarking on projects like this. 
+ 1. Docker installed on local machine or cloud IDEs.
+ 2. Basic knowledge of Apache Kafka, MySQL, Superset, containerization in-general and data visualization.
+ 3. Understanding of real-time streaming data, message brokering, resource handling and its processing.
+ 4. Linux OS makes life a lot easier. Avoid Windows OS when embarking on projects like this. 
 
 ## Requirements
 
@@ -29,18 +29,23 @@ This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming 
       * Schema-Registry 7.3.1
       * Kafka Broker server 7.3.1
       * ZooKeeper 7.3.1
-  * MySQL:8.0.32-debian
+  * MySQL:```8.0.32-debian```
   * phpmyadmin
   * Apache Superset
 
 ## Features
 
-    * Python Clients for connections: We have used PyMySQL library and confluent-kafka python libraries.
-    * Data Ingestion: We have use the python script to collect and transport data from various sources to Apache Kafka.
-    * Data Processing: Apache Kafka is used to process the incoming data in real-time and make it available for further analysis.
-    * Data Storage: MySQL is used to store the messages as they are being ingested. Kafka ingests row-by-row.
-    * Monitoring: Confluent's Control-Centre dashboard is used to monitor the topics and resources in real-time.
-    * Data Visualization: Apache Superset is used to create interactive dashboards and visualizations for the ingested data.
+    1. Python Clients for connections:  We have used PyMySQL library and confluent-kafka python libraries.
+    
+    2. Data Ingestion: We have use the python script to collect and transport data from various sources to Apache Kafka.
+    
+    3. Data Processing: Apache Kafka is used to process the incoming data in real-time and make it available for further analysis.
+    
+    4. Data Storage: MySQL is used to store the messages as they are being ingested. Kafka ingests row-by-row.
+    
+    5. Monitoring: Confluent's Control-Centre dashboard is used to monitor the topics and resources in real-time.
+    
+    6. Data Visualization: Apache Superset is used to create interactive dashboards and visualizations for the ingested data.
 
 ## Setup
 
@@ -55,14 +60,18 @@ This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming 
 1. The first step in getting started with this project is to download the latest version of Apache Superset by using the following command:
 
 bash:
-2. docker pull apache/superset
+```
+2. $ docker pull apache/superset
+```
 
 Once you have Superset installed, you can start the container using the following command:
 
 bash:
+```
 3. docker run -d --name superset -p 8090:8088 apache/superset
+```
 
-This will start the container and map port 8090 on your local machine to port 8088 within the container. You can then access the Apache Superset UI by navigating to http://localhost:8090 in your web browser.
+This will start the container and map port ```8090``` on your local machine to port ```8088``` within the container. You can then access the Apache Superset UI by navigating to ```http://localhost:8090 ``` in your web browser.
 
 4. Configuring Apache Superset:
 
