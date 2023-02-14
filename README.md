@@ -6,6 +6,33 @@ This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming 
 
 ![image](https://user-images.githubusercontent.com/95084188/218446337-c83e8779-ce42-4f0c-8db0-f55f88d4df17.png)
 
+## The Dataset
+
+The dataset was collected from a moving device, across a 70 km drive. An application in a mobile device was used to extract the phone's "Orientation" values during this trip that lasted 2 - 3 hrs. 
+
+A snippet of the data looks like this:
+
+```
+| time                | seconds_elapsed   | qz                | qy                | qx                 | qw                | roll              | pitch              | yaw               |
++---------------------+-------------------+-------------------+-------------------+--------------------+-------------------+-------------------+--------------------+-------------------+
+| 28-10-2022 04:55:56 |   0.1645263671875 | 0.495980978012085 | 0.188404202461243 | 0.0901745185256004 | 0.842837631702423 | 0.244929581880569 | -0.345741897821426 | -1.02081370353699 |
+| 28-10-2022 04:55:56 |   0.1695009765625 | 0.495985835790634 | 0.188402488827705 | 0.0901651754975319 | 0.842836260795593 | 0.244933515787125 | -0.345724999904633 | -1.02082526683807 |
+| 28-10-2022 04:55:56 |  0.17450537109375 | 0.495990812778473 | 0.188399642705917 | 0.0901557356119156 | 0.842834949493408 | 0.244935348629951 | -0.345706850290298 | -1.02083742618561  
+
+```
+
+As you observe in the dataset, the headers in the context of "Orientation" from the moving device are the column names in the dataset. They are:
+
+    ```time:``` The timestamp when the orientation data was recorded.
+
+    ```seconds_elapsed:``` The number of seconds that have elapsed since the device was turned on (i.e., the uptime).
+
+    ```qz, qy, qx, and qw:``` The components of the quaternion that represents the device's orientation. These values describe the device's rotation in 3D space.
+
+    ```roll, pitch, and yaw:``` The Euler angles that describe the device's orientation. These values represent the rotation around the X, Y, and Z axes, respectively.
+
+    The quaternion components ```qz, qy, qx, and qw``` are related to the ```Euler angles roll, pitch, and yaw``` through a mathematical transformation. The ```seconds_elapsed``` column is not directly related to the other columns, but it can be used to calculate the time difference between successive orientation measurements.
+
 
 ## Prerequisites
 

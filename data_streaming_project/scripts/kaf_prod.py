@@ -26,9 +26,9 @@ host = "172.17.0.3"
 port = 3306
 
 if is_reachable(host, port):
-    print("Host is reachable")
+    print("Hurray! Host is reachable!")
 else:
-    print("Host is not reachable")
+    print("Host is not reachable!")
 
 
 # Set up our connection to the database and create a new table.
@@ -69,6 +69,8 @@ metadata.create_all(engine)
 
 # Load our dataset into a Pandas Dataframe for advanced manipulations.
 df = pd.read_csv(r"./../datasets/Orientation.csv")
+# Convert our first column which is in UNIX EPOCH time to DMY....a format that Apache Superset will pick easily.
+df['time'] = pd.to_datetime(df['time'], unit='ms').dt.strftime('%d-%m-%Y %H:%M:%S')
 df.head(5)
 
 
