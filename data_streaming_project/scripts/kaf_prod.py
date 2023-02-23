@@ -22,7 +22,7 @@ def is_reachable(host, port):
     except:
         return False
 
-host = "172.17.0.3"
+host = "172.17.0.2"
 port = 3306
 
 if is_reachable(host, port):
@@ -40,7 +40,7 @@ started before running this python script.'''
 
 user = 'root'
 password = 'root'
-host =  '172.17.0.3'
+host =  '172.17.0.2'
 port = 3306
 database = 'KAFKA_DB'
 

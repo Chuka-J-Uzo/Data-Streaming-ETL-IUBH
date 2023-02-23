@@ -10,7 +10,6 @@
 # If you'd like to view the docker-compose.yml file rendered with its environment variable substitutions
 # you can execute the `docker-compose config` command.  Take note that some demos provide additional 
 # environment variable values by exporting them in a script prior to running `docker-compose up`.
----
 version: '2'
 services:
 
@@ -110,7 +109,7 @@ services:
       # Uncomment the following property to evaluate TLS 1.3 for Broker<->ZooKeeper
       KAFKA_ZOOKEEPER_SSL_PROTOCOL: TLSv1.3
 
-      KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: "TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256"
+      KAFKA_ZOOKEEPER_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka1.keystore.jks
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent
@@ -701,7 +700,7 @@ services:
               username="controlcenterAdmin" \
               password="controlcenterAdmin" \
               metadataServerUrls="https://kafka1:8091,https://kafka2:8092";
-      CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: "TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256"
+      CONTROL_CENTER_STREAMS_SSL_CIPHER_SUITES: ${SSL_CIPHER_SUITES}
 
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
@@ -1005,5 +1004,18 @@ services:
       KAFKA_REST_CONFLUENT_METADATA_BASIC_AUTH_USER_INFO: 'restAdmin:restAdmin'
 
 
-
+  streams-demo:
+    image: cnfldemos/cp-demo-kstreams:0.0.10
+    restart: always
+    depends_on:
+      schemaregistry:
+        condition: service_healthy
+    hostname: streams-demo
+    container_name: streams-demo
+    volumes:
+      - ./scripts/security:/etc/kafka/secrets
+    env_file:
+      - ./env_files/streams-demo.env
+    environment:
+      KAFKA_REPLICATION_FACTOR: 1
   

@@ -13,9 +13,8 @@ p = Producer({'bootstrap.servers': '127.0.0.1:9092',
               'security.protocol': 'PLAINTEXT'
                })
 
-#conn = mysql.connector.connect(user='root', password='root', host='172.17.0.3', database='KAFKA_DB')
 conn = pymysql.connect(
-    host='172.17.0.3',
+    host='172.17.0.5',
     user='root',
     password='root',
     db='KAFKA_DB'
