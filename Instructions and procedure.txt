@@ -32,6 +32,28 @@ $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p
 
      Then we create a Table using the schema or column names in the data we are trying to ingest. Our table is called "INGESTED_TABLE_1"
      CREATE TABLE INGESTED_TABLE_1 (time float, seconds_elapsed float,  qz float, qy float, qx float, qw float, roll float, pitch float, yaw float);
+     
+CREATE TABLE TRUCK_PARAMETER_MAP (
+    `current_time` DATETIME,
+    road_elevation FLOAT,
+    `Engine Speed` FLOAT,
+    `Coolant Temp` FLOAT,
+    `Oil Pressure` FLOAT,
+    `Oil Temp` FLOAT,
+    `Throttle Position` FLOAT,
+    `Fuel Pressure` FLOAT,
+    `Mass Airflow Rate` FLOAT,
+    `Intake Air Temp` FLOAT,
+    `Engine Load` FLOAT,
+    `Battery Voltage` FLOAT,
+    `Acceleration` FLOAT,
+    `Fuel Level` FLOAT,
+    `Exhaust Gas Temp` FLOAT,
+    `Engine Hours` FLOAT,
+    `Tyre Pressure` FLOAT,
+    PRIMARY KEY (`current_time`)
+);
+
 
 # FOR THOSE USING LOCAL MACHINES, After running MySQL on docker, and you are trying to enter mysql prompt, but you get this error, ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
 
@@ -41,6 +63,20 @@ sudo docker exec -it <container_name> mysql -u <user_name> -p
 sudo docker exec -it MySQL_Container mysql -u root -p
                              OR
 mysql --user=root --password=root
+
+
+If Kafka fails after running it, the docker compose setting for kafka
+were likely wrong, use this instead:
+
+
+docker run -d \
+    --net=host \
+    --name=broker \
+    -e KAFKA_ZOOKEEPER_CONNECT=localhost:2181 \
+    -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+    -e KAFKA_BROKER_ID=1 \
+    -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+    confluentinc/cp-kafka:7.3.1
 
 
 
@@ -113,14 +149,29 @@ $ sudo docker exec -it superset superset init
 
 
 
+# Installing Apache druid:
+
+$ docker pull apache/druid:25.0.0
+
+
+``` SELECT * FROM INGEST_PANDAS_PROCESSED_1 LIMIT 900000;   ```
 
 
 
 
 
+docker pull ubuntu/kafka:3.1-22.04_beta
+https://hub.docker.com/r/ubuntu/kafka
+docker run -d --name kafka-container -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
 
 
+docker pull ubuntu/zookeeper:3.1-22.04_beta
+https://hub.docker.com/r/ubuntu/zookeeper
+docker run -d --name zookeeper-container -e TZ=UTC -p 2181:2181 ubuntu/zookeeper:3.1-22.04_beta
 
+Expose the Kafka port to the host network. You can do this by adding the --network host option to the docker run command:
+docker run -d --name kafka-container --network host -e TZ=UTC -e KAFKA_ADVERTISED_HOST_NAME=host.docker.internal -e KAFKA_ADVERTISED_PORT=9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+Note that in this case, you do not need to publish the Kafka port with -p since the container is using the host network. Also, make sure that any firewall or security groups are not blocking traffic to the Kafka port.
 
 
 

@@ -1,14 +1,15 @@
-import sys
-import pyspark                
+import findspark
+findspark.init()
+import pyspark 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-import findspark
-findspark.init()
+import os
+import sys
 
-#import os
-#os.environ["HADOOP_CONF_DIR"] = "<path_to_hadoop_conf_dir>"
-
+os.environ['SPARK_HOME'] = '/opt/spark'
+sys.path.append('/opt/spark/python')
+sys.path.append('/opt/spark/python/lib/py4j-0.10.9-src.zip')
 
 
 # Create a Spark session
@@ -49,7 +50,7 @@ df = spark \
 
 # Now, let's perform transformations on the inbound data as needed
 # 1. Calculate the average pitch for each second
-df_transformed = df.groupBy(df['seconds']).agg(avg(df['pitch']).alias("avg_pitch"))
+#df_transformed = df.groupBy(df['seconds']).agg(avg(df['pitch']).alias("avg_pitch"))
 
 # 2. Filter data with only specific columns and rename the columns
 df_transformed = df.select("time", "qz", "qy", "qx", "qw") \
@@ -97,14 +98,13 @@ df_transformed = df.withColumn("timestamp", from_unixtime(col("time")/1000, "yyy
 # Now, we write our transformed data to a MySQL table
 df_transformed.writeStream \
     .format("jdbc") \
-    .option("url", "jdbc:mysql://localhost:3306/SPARK_TRANSFORMED_DB") \
+    .option("url", "jdbc:mysql://MySQL_Container:3306/KAFKA_DB") \
     .option("dbtable", "SPARK_TABLE_TRANSFORMED") \
     .option("user", "root") \
     .option("password", "root") \
     .option("checkpointLocation", "/tmp/checkpoints") \
+    .option("driver", "com.mysql.cj.jdbc.Driver") \
     .start()
-
-
 
 # Submit my file to spark-submit
 

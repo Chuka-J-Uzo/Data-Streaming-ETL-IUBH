@@ -22,7 +22,7 @@ def is_reachable(host, port):
     except:
         return False
 
-host = "172.17.0.2"
+host = "172.17.0.3"
 port = 3306
 
 if is_reachable(host, port):
@@ -40,7 +40,7 @@ started before running this python script.'''
 
 user = 'root'
 password = 'root'
-host =  '172.17.0.2'
+host =  '172.17.0.3'
 port = 3306
 database = 'KAFKA_DB'
 
@@ -68,7 +68,7 @@ conn = engine.connect()
 metadata.create_all(engine)
 
 # Load our dataset into a Pandas Dataframe for advanced manipulations.
-df = pd.read_csv(r"./../datasets/Orientation.csv")
+df = pd.read_csv(r"/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/datasets/Orientation.csv")
 # Convert our first column which is in UNIX EPOCH time to DMY....a format that Apache Superset will pick easily.
 df['time'] = pd.to_datetime(df['time'], unit='ms').dt.strftime('%d-%m-%Y %H:%M:%S')
 df.head(5)
