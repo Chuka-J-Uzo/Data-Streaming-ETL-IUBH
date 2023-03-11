@@ -35,7 +35,7 @@ $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p
      
 CREATE TABLE TRUCK_PARAMETER_MAP (
     `current_time` DATETIME,
-    road_elevation FLOAT,
+    `road_elevation` FLOAT,
     `Engine Speed` FLOAT,
     `Coolant Temp` FLOAT,
     `Oil Pressure` FLOAT,
@@ -227,3 +227,12 @@ if data_list:
 
 p.flush()
 conn.close()
+
+
+CREATE TABLE TRUCK_PARAMETER_MAP (
+    `timestamp` DATETIME,
+    `distance_covered` FLOAT,
+    `engine_speed` FLOAT,
+    `fuel_consumed` FLOAT,
+     PRIMARY KEY (`current_time`)
+);

@@ -28,7 +28,7 @@ cursor.execute("SET GLOBAL innodb_buffer_pool_size=134217728")
 # Set innodb_flush_log_at_trx_commit to 0
 cursor.execute("SET GLOBAL innodb_flush_log_at_trx_commit=0")
 
-def delivery_report(err, msg):
+def delivery_report(err, msg):          
     if err is not None:
         print('Message delivery failed: {}'.format(err))
     else:

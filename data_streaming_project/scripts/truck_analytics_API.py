@@ -3,6 +3,7 @@ import time
 import datetime
 from confluent_kafka import Producer
 
+
 def generate_sensor_data():
     # Generate pseudo-real-time data for all parameters
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -68,7 +69,7 @@ while True:
     data_str = data_str[:-1].encode('utf-8')
 
     # Publish data to Kafka topic
-    p.produce('data-inflow-1', data_str)
+    p.produce('sensor-data', data_str)
     p.poll(0)
 
     # Wait some time before generating next set of data
