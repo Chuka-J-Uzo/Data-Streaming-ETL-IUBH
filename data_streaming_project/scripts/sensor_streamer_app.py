@@ -44,16 +44,29 @@ producer = Producer(producer_config)
 
 def produce_truck_data():
     try:
-        distance_covered = 100
-        fuel_tank_capacity = 50
+        fuel_tank_capacity = 250
         fuel_remaining = fuel_tank_capacity
+        distance_travelled = 0
         counter = 0
         
-        for i in range(100):
-            engine_speed = i + 80
-            distance_travelled = i + 1
-            distance_covered = i + 100
-            fuel_consumed = (distance_travelled / distance_covered) * fuel_tank_capacity
+        # get the last recorded distance and fuel consumption from the database
+        last_record = connection.execute(truck_data.select().order_by(truck_data.c.id.desc()).limit(1)).fetchone()
+        if last_record is None:
+            # if no records exist in the database, start from the beginning
+            distance_covered = 0
+            fuel_consumed = 0
+        else:
+            # if records exist, continue from the last recorded values
+            distance_covered = last_record.distance_covered
+            fuel_consumed = last_record.fuel_consumed
+        
+        while fuel_remaining > 0:
+            engine_speed = np.random.normal(80, 0.1)
+            time_elapsed = np.random.exponential(scale=1/3000) * 3600  # time elapsed in seconds
+            distance_travelled = (time_elapsed / 3600) * engine_speed
+            distance_covered += distance_travelled
+            fuel_consumption_rate = np.interp(engine_speed, [80, 95], [0.01, 0.1])  # liters/km
+            fuel_consumed += distance_travelled * fuel_consumption_rate
             fuel_remaining -= fuel_consumed
             if fuel_remaining <= 0:
                 break
@@ -74,6 +87,7 @@ def produce_truck_data():
             
             try:
                 connection.execute(stmt)
+            
             except IntegrityError:
                 # If the insert fails due to a duplicate key error, update the existing record instead
                 stmt = truck_data.update().values(
@@ -96,6 +110,7 @@ def produce_truck_data():
 
     finally:
         connection.close()
+
 
 if __name__ == '__main__':
     produce_truck_data()
