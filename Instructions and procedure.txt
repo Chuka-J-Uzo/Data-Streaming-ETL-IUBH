@@ -92,6 +92,9 @@ docker run -d \
 # Create a Kafka topic (right-click against the running Kafka broker or kafka server). We call it "data-inflow-1"
 $ ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic data-inflow-1
 
+OR
+
+kafka-topics.sh --create --topic Truck-Data --partitions 3 --replication-factor 1 --bootstrap-server localhost:9092 --config segment.ms=10000 --config retention.ms=3600000
 
 # Install confluent kafka python client
 pip install confluent-kafka

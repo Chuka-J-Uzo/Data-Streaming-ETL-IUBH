@@ -111,6 +111,8 @@ def produce_truck_data():
                     "engine_speed": np.round(engine_speed, 2),
                     "fuel_consumed": np.round(fuel_consumed, 2)}
             producer.produce("Truck-Data", value=str(data).encode())
+            producer.flush() # We add a flush here to ensure messages are delivered before moving to next iteration
+            
             
             # Insert generated data into mysql database
             stmt = insert(truck_data).values(
