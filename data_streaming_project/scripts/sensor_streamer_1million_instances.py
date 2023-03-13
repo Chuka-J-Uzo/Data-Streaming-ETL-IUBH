@@ -29,7 +29,8 @@ if is_reachable(host, port):
     print("Kafka is now producing messages.....🥳")     
 else:
     print("Host is not reachable!")
-    
+
+
 
 # setup database connection
 user = 'root'
@@ -82,7 +83,7 @@ def produce_truck_data():
             distance_covered = last_record.distance_covered
             fuel_consumed = last_record.fuel_consumed
         
-        while fuel_remaining > 0:
+        for i in range(1200000):
             engine_speed = np.random.normal(80, 0.1)
             time_elapsed = np.random.exponential(scale=1/3000) * 3600  # time elapsed in seconds
             distance_travelled = (time_elapsed / 3600) * engine_speed
@@ -132,7 +133,6 @@ def produce_truck_data():
 
     finally:
         connection.close()
-
 
 if __name__ == '__main__':
     produce_truck_data()
