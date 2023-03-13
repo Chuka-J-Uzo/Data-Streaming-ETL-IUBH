@@ -25,11 +25,11 @@ host = "172.17.0.3"
 port = 3306
 
 if is_reachable(host, port):
-    print("Hurray! Host is now reachable on " , host , "and port number:" , port)
-    print("Kafka is now producing messages.....🥳")     
+    print("\n Hurray! Host is now reachable on " , host , "and port number:" , port)
+    print("\n Kafka is now producing messages.....🥳 \n")     
 else:
-    print("Host is not reachable!")
-    
+    print("Host is not reachable! 😭")
+
 
 # setup database connection
 user = 'root'
@@ -81,7 +81,20 @@ def produce_truck_data():
             # if records exist, continue from the last recorded values
             distance_covered = last_record.distance_covered
             fuel_consumed = last_record.fuel_consumed
-        
+
+        counter = 1
+
+        '''
+        The "counter = 1" line of code above, initializes 
+        counter to a value of 1. It is used to count 
+        or index our "Message sent successfully" delivery message 
+        elements used below in a program loop or 
+        function, to keep track of the state of some 
+        component in the larger system, or to simply 
+        represent a numerical value assigned to a 
+        variable for use later on in our program.
+        '''
+
         while fuel_remaining > 0:
             engine_speed = np.random.normal(80, 0.1)
             time_elapsed = np.random.exponential(scale=1/3000) * 3600  # time elapsed in seconds
@@ -121,8 +134,10 @@ def produce_truck_data():
             
             connection.commit()
             
-            counter += 1
-            print("Message sent successfully")
+            
+            print("Message sent successfully [{}]".format(counter))
+
+            counter += 1 # This code increments the value of our counter by 1.
 
         producer.flush() # flushes all outstanding messages from the buffer.
    
