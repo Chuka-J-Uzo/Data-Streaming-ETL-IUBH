@@ -1,0 +1,280 @@
+version: "3.6"
+services:
+  MySQL_Container:
+    command:
+      - "mysqld"
+    container_name: "MySQL_Container"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "GOSU_VERSION=1.16"
+      - "MYSQL_MAJOR=8.0"
+      - "MYSQL_VERSION=8.0.32-1debian11"
+    hostname: "5dbdad35693a"
+    image: "mysql:8.0.32-debian"
+    ipc: "private"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:04"
+    network_mode: "bridge"
+    ports:
+      - "3306:3306/tcp"
+    volumes:
+      - "1117dd6aac2f2a558c3f6b23c287c1d765ed46330ce5b8da286834225747433e:/var/lib/mysql"
+
+
+  grafana:
+    container_name: "grafana"
+    entrypoint:
+      - "/run.sh"
+    environment:
+      - "PATH=/usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "GF_PATHS_CONFIG=/etc/grafana/grafana.ini"
+      - "GF_PATHS_DATA=/var/lib/grafana"
+      - "GF_PATHS_HOME=/usr/share/grafana"
+      - "GF_PATHS_LOGS=/var/log/grafana"
+      - "GF_PATHS_PLUGINS=/var/lib/grafana/plugins"
+      - "GF_PATHS_PROVISIONING=/etc/grafana/provisioning"
+    hostname: "103fac48cc04"
+    image: "grafana/grafana"
+    ipc: "private"
+    labels:
+      maintainer: "Grafana Labs <hello@grafana.com>"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:07"
+    network_mode: "bridge"
+    ports:
+      - "3000:3000/tcp"
+    user: "472"
+    working_dir: "/usr/share/grafana"
+
+
+
+  kafka-container:
+    command:
+      - "/etc/kafka/server.properties"
+    container_name: "kafka-container"
+    entrypoint:
+      - "entrypoint.sh"
+    environment:
+      - "KAFKA_ADVERTISED_HOST_NAME=172.17.0.5"
+      - "KAFKA_ADVERTISED_PORT=9092"
+      - "ZOOKEEPER_HOST=172.17.0.3"
+      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "TZ=UTC"
+      - "ZOOKEEPER_PORT=2181"
+    hostname: "705555bd1adb"
+    image: "ubuntu/kafka:latest"
+    ipc: "private"
+    labels:
+      maintainer: "Ubuntu Server team <ubuntu-server@lists.ubuntu.com>"
+      org.opencontainers.image.ref.name: "ubuntu"
+      org.opencontainers.image.version: "22.04"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:06"
+    network_mode: "bridge"
+    ports:
+      - "9092:9092/tcp"
+    volumes:
+      - "volume-STREAM-IUBH:/data_streaming_project"
+
+
+  node-exporter-prometheus:
+    command:
+      - "--path.rootfs=/host"
+    container_name: "node-exporter-prometheus"
+    entrypoint:
+      - "/bin/node_exporter"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    expose:
+      - "9100/tcp"
+    hostname: "blackjack"
+    image: "quay.io/prometheus/node-exporter"
+    ipc: "private"
+    labels:
+      maintainer: "The Prometheus Authors <prometheus-developers@googlegroups.com>"
+    logging:
+      driver: "json-file"
+      options: {}
+    network_mode: "host"
+    security_opt:
+      - "label=disable"
+    user: "nobody"
+    volumes:
+      - "/:/host:ro"
+
+
+  phpmyadmin:
+    command:
+      - "apache2-foreground"
+    container_name: "phpmyadmin"
+    entrypoint:
+      - "/docker-entrypoint.sh"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "PHPIZE_DEPS=autoconf \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\
+        \tmake \t\tpkg-config \t\tre2c"
+      - "PHP_INI_DIR=/usr/local/etc/php"
+      - "APACHE_CONFDIR=/etc/apache2"
+      - "APACHE_ENVVARS=/etc/apache2/envvars"
+      - "PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+      - "PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE\
+        \ -D_FILE_OFFSET_BITS=64"
+      - "PHP_LDFLAGS=-Wl,-O1 -pie"
+      - "GPG_KEYS=528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544\
+        \ F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD"
+      - "PHP_VERSION=8.1.16"
+      - "PHP_URL=https://www.php.net/distributions/php-8.1.16.tar.xz"
+      - "PHP_ASC_URL=https://www.php.net/distributions/php-8.1.16.tar.xz.asc"
+      - "PHP_SHA256=d61f13d96a58b93c39672b58f25e1ee4ce88500f4acb1430cb01a514875c1258"
+      - "MAX_EXECUTION_TIME=600"
+      - "MEMORY_LIMIT=512M"
+      - "UPLOAD_LIMIT=2048K"
+      - "VERSION=5.2.1"
+      - "SHA256=373f9599dfbd96d6fe75316d5dad189e68c305f297edf42377db9dd6b41b2557"
+      - "URL=https://files.phpmyadmin.net/phpMyAdmin/5.2.1/phpMyAdmin-5.2.1-all-languages.tar.xz"
+    hostname: "02e4291998ae"
+    image: "phpmyadmin"
+    ipc: "private"
+    labels:
+      org.opencontainers.image.authors: "The phpMyAdmin Team <developers@phpmyadmin.net>"
+      org.opencontainers.image.description: "Run phpMyAdmin with Alpine, Apache and\
+        \ PHP FPM."
+      org.opencontainers.image.documentation: "https://github.com/phpmyadmin/docker#readme"
+      org.opencontainers.image.licenses: "GPL-2.0-only"
+      org.opencontainers.image.source: "https://github.com/phpmyadmin/docker.git"
+      org.opencontainers.image.title: "Official phpMyAdmin Docker image"
+      org.opencontainers.image.url: "https://github.com/phpmyadmin/docker#readme"
+      org.opencontainers.image.vendor: "phpMyAdmin"
+      org.opencontainers.image.version: "5.2.1"
+    links:
+      - "/MySQL_Container:/phpmyadmin/db"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:05"
+    network_mode: "bridge"
+    ports:
+      - "8085:80/tcp"
+    restart: "always"
+    working_dir: "/var/www/html"
+
+
+  prometheus:
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    container_name: "prometheus"
+    entrypoint:
+      - "/bin/prometheus"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    hostname: "0114b5d90996"
+    image: "prom/prometheus"
+    ipc: "private"
+    labels:
+      maintainer: "The Prometheus Authors <prometheus-developers@googlegroups.com>"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:08"
+    network_mode: "bridge"
+    ports:
+      - "9090:9090/tcp"
+    user: "nobody"
+    volumes:
+      - "/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "e55e0b4e9ad93ee7797db235a730e945750bd5b42c544cda4eee5d580561c9f1:/prometheus"
+    working_dir: "/prometheus"
+
+
+  pyspark-elyra:
+    command:
+      - "start-notebook.sh"
+    container_name: "pyspark-elyra"
+    entrypoint:
+      - "tini"
+      - "-g"
+      - "--"
+    environment:
+      - "PATH=/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/spark/bin"
+      - "DEBIAN_FRONTEND=noninteractive"
+      - "CONDA_DIR=/opt/conda"
+      - "SHELL=/bin/bash"
+      - "NB_USER=jovyan"
+      - "NB_UID=1000"
+      - "NB_GID=100"
+      - "LC_ALL=en_US.UTF-8"
+      - "LANG=en_US.UTF-8"
+      - "LANGUAGE=en_US.UTF-8"
+      - "HOME=/home/jovyan"
+      - "JUPYTER_PORT=8888"
+      - "XDG_CACHE_HOME=/home/jovyan/.cache/"
+      - "APACHE_SPARK_VERSION=3.1.2"
+      - "HADOOP_VERSION=3.2"
+      - "JUPYTER_ENABLE_LAB=yes"
+      - "SPARK_HOME=/usr/local/spark"
+      - "SPARK_OPTS=--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M\
+        \ --driver-java-options=-Dlog4j.logLevel=info"
+    hostname: "e074ae03eca1"
+    image: "ruslanmv/pyspark-elyra"
+    ipc: "private"
+    labels:
+      maintainer: "Jupyter Project <jupyter@googlegroups.com>"
+      org.opencontainers.image.ref.name: "ubuntu"
+      org.opencontainers.image.version: "22.04"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:02"
+    network_mode: "bridge"
+    ports:
+      - "8888:8888/tcp"
+    stdin_open: true
+    tty: true
+    user: "1000"
+    volumes:
+      - "/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH:/home/jovyan/work"
+    working_dir: "/home/jovyan"
+
+    
+  zookeeper-container:
+    command:
+      - "/etc/kafka/zookeeper.properties"
+    container_name: "zookeeper-container"
+    entrypoint:
+      - "/opt/kafka/bin/zookeeper-server-start.sh"
+    environment:
+      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "TZ=UTC"
+    hostname: "d3ae1dbd2d31"
+    image: "ubuntu/zookeeper:latest"
+    ipc: "private"
+    labels:
+      maintainer: "Ubuntu Server team <ubuntu-server@lists.ubuntu.com>"
+      org.opencontainers.image.ref.name: "ubuntu"
+      org.opencontainers.image.version: "22.04"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: "02:42:ac:11:00:03"
+    network_mode: "bridge"
+    ports:
+      - "2181:2181/tcp"
+volumes:
+  1117dd6aac2f2a558c3f6b23c287c1d765ed46330ce5b8da286834225747433e:
+    external: true
+  e55e0b4e9ad93ee7797db235a730e945750bd5b42c544cda4eee5d580561c9f1:
+    external: true
+  volume-STREAM-IUBH:
+    external: true
