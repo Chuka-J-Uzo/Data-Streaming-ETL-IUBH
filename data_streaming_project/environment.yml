@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+dependencies:
+  - ta-lib
+  - pip
+  - pip:
+    - backtrader

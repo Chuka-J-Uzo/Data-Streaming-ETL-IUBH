@@ -63,6 +63,21 @@ CREATE TABLE TRUCK_PARAMETER_MAP (
     PRIMARY KEY (`current_time`)
 );
 
+CREATE TABLE COMMODITIES_PRICES (
+    `id` INT AUTO_INCREMENT PRIMARY KEY, \
+    `symbol` VARCHAR(10) NOT NULL, \
+    `name` VARCHAR(100) NOT NULL, \
+    `last_price` DECIMAL(10, 2), \
+    `market_time` DATETIME, \
+    `price_change` DECIMAL(10, 2), \
+    `percent_change` DECIMAL(5, 2), \
+    `volume` BIGINT
+);
+
+
+
+
+
 
 # FOR THOSE USING LOCAL MACHINES, After running MySQL on docker, and you are trying to enter mysql prompt, but you get this error, ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
 
@@ -103,8 +118,13 @@ pip install confluent-kafka
 pip install mysql-connector-python
 
 
-# Now install Pyspark python client
-pip install pyspark
+# Now install Pyspark 
+
+This application will create a jupyter notebook ready with Pyspark and Spark 3.1.2 with Hadoop 3.2
+- Use this link to install pyspark on docker as above: https://ruslanmv.com/blog/Docker-Container-with-Pyspark-and-Jupyter-and-Elyra
+- After you have built the image with: docker build --rm -t ruslanmv/pyspark-notebook .
+- Use this to run the container: docker run  --name pyspark-notebook  -it -p 8888:8888  -v /home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH:/home/jovyan/work  -d ruslanmv/pyspark-notebook
+- Now check for jupyter URL(with token) in the pyspark container's logs. right-click on it an select "view logs".
 
 
 # How to start Kafka broker with a large memory allocation
@@ -187,59 +207,13 @@ Note that in this case, you do not need to publish the Kafka port with -p since 
 
 
 
+SPARK SCHEMA CREATION
 
-
-
-
-
-
-
-import csv
-import mysql.connector
-from confluent_kafka import Producer
-
-p = Producer({'bootstrap.servers': '127.0.0.1:9092',
-              'acks': 'all',
-              'queue.buffering.max.messages': 1300000,
-              'queue.buffering.max.kbytes': 2000000,
-              'compression.type': 'lz4'
-              })
-
-conn = mysql.connector.connect(user='root', password='root',
-                              host='172.17.0.3', database='KAFKA_DB')
-cursor = conn.cursor()
-
-def delivery_report(err, msg):
-    if err is not None:
-        print('Message delivery failed: {}'.format(err))
-    else:
-        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
-        data = msg.value().decode('utf-8')
-        values = data.split(',')
-        cursor.execute("INSERT INTO INGESTED_TABLE_1 (time, seconds_elapsed, qz,  qy,  qx,  qw,  roll, pitch, yaw) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", values)
-        conn.commit()
-
-with open("data_streaming_project/datasets/Orientation.csv", "r") as file:
-    reader = csv.reader(file)
-    next(reader)
-    data_list = []
-    for i, row in enumerate(reader):
-        data = ",".join(row).encode('utf-8')
-        data_list.append(data)
-        if (i + 1) % 10000 == 0:
-            for data in data_list:
-                p.produce('data-inflow-1', data, callback=delivery_report)
-                p.poll(0)
-            data_list = []
-
-if data_list:
-    for data in data_list:
-        p.produce('data-inflow-1', data, callback=delivery_report)
-        p.poll(0)
-
-p.flush()
-conn.close()
-
-
-
+schema = StructType([
+        StructField("id", IntegerType(), True),
+        StructField("timestamp", LongType(), True),
+        StructField("distance_covered", DoubleType(), True),
+        StructField("engine_speed", DoubleType(), True),
+        StructField("fuel_consumed", DoubleType(), True),
+    ])
 

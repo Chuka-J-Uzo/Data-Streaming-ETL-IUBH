@@ -1,0 +1,157 @@
+{
+  "doc_type": "pipeline",
+  "version": "3.0",
+  "json_schema": "http://api.dataplatform.ibm.com/schemas/common-pipeline/pipeline-flow/pipeline-flow-v3-schema.json",
+  "id": "elyra-auto-generated-pipeline",
+  "primary_pipeline": "primary",
+  "pipelines": [
+    {
+      "id": "primary",
+      "nodes": [
+        {
+          "id": "ef609385-bdd5-4ac4-8ce1-cc0ef9869958",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [],
+              "env_vars": [],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "test_spark.py",
+              "runtime_image": "continuumio/anaconda3@sha256:a2816acd3acda208d92e0bf6c11eb41fda9009ea20f24e123dbf84bb4bd4c4b8"
+            },
+            "label": "",
+            "ui_data": {
+              "label": "test_spark.py",
+              "image": "/static/elyra/python.svg",
+              "x_pos": 425,
+              "y_pos": 269,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              },
+              "links": [
+                {
+                  "id": "29f2c6e8-9050-4c15-9bf4-3f6d1152882e",
+                  "node_id_ref": "d7fa0766-855b-44cf-a4b8-623dde29056a",
+                  "port_id_ref": "outPort"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "d7fa0766-855b-44cf-a4b8-623dde29056a",
+          "type": "execution_node",
+          "op": "execute-python-node",
+          "app_data": {
+            "component_parameters": {
+              "dependencies": [],
+              "include_subdirectories": false,
+              "outputs": [],
+              "env_vars": [],
+              "kubernetes_pod_annotations": [],
+              "kubernetes_pod_labels": [],
+              "kubernetes_secrets": [],
+              "kubernetes_shared_mem_size": {},
+              "kubernetes_tolerations": [],
+              "mounted_volumes": [],
+              "filename": "sensor_streamer_1million_instances.py",
+              "runtime_image": "continuumio/anaconda3@sha256:a2816acd3acda208d92e0bf6c11eb41fda9009ea20f24e123dbf84bb4bd4c4b8"
+            },
+            "label": "",
+            "ui_data": {
+              "label": "sensor_streamer_1million_instances.py",
+              "image": "/static/elyra/python.svg",
+              "x_pos": 179,
+              "y_pos": 445,
+              "description": "Run Python script"
+            }
+          },
+          "inputs": [
+            {
+              "id": "inPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Input Port"
+                }
+              }
+            }
+          ],
+          "outputs": [
+            {
+              "id": "outPort",
+              "app_data": {
+                "ui_data": {
+                  "cardinality": {
+                    "min": 0,
+                    "max": -1
+                  },
+                  "label": "Output Port"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "app_data": {
+        "ui_data": {
+          "comments": []
+        },
+        "version": 8,
+        "properties": {
+          "name": "untitled",
+          "runtime": "Generic",
+          "pipeline_defaults": {
+            "mounted_volumes": [],
+            "kubernetes_pod_annotations": [],
+            "kubernetes_shared_mem_size": {},
+            "kubernetes_tolerations": [],
+            "kubernetes_pod_labels": [],
+            "env_vars": [],
+            "kubernetes_secrets": []
+          },
+          "description": "Kafka_Spark_Streaming app"
+        }
+      },
+      "runtime_ref": ""
+    }
+  ],
+  "schemas": []
+}
