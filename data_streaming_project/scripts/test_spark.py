@@ -25,7 +25,7 @@ df = spark \
     .option("kafkaConsumer.pollTimeoutMs", "512") \
     .option("kafkaConsumer.request.timeout.ms", "10000") \
     .option("kafkaConsumer.session.timeout.ms", "30000") \
-    .option("kafkaConsumer.max.poll.records", "10") \
+    .option("kafkaConsumer.max.poll.records", "1000") \
     .option("kafkaConsumer.auto.offset.reset", "latest") \
     .option("kafkaConsumer.enable.auto.commit", "false") \
     .option("kafkaConsumer.group.id", kafka_consumer_group) \
@@ -44,6 +44,7 @@ query = df.writeStream \
     .outputMode("append") \
     .format("console") \
     .start()
+
 
 # Start the streaming query and wait for it to finish
 query.awaitTermination()

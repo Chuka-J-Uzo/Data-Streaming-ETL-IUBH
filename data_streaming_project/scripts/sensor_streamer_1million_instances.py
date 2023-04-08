@@ -23,7 +23,7 @@ def is_reachable(host, port):
     except:
         return False
 
-host = "172.17.0.4"
+host = "172.17.0.3"
 port = 3306
 
 if is_reachable(host, port):
@@ -37,7 +37,7 @@ else:
 # setup database connection
 user = 'root'
 password = 'root'
-host = '172.17.0.4'
+host = '172.17.0.3'
 port = '3306'
 database = 'KAFKA_DB'
 
@@ -150,7 +150,7 @@ def produce_truck_data():
             connection.commit()
             
             #counter += 1
-            print("Message [{}] sent successfully ------------------------> ".format(counter))
+            print("Message [{}] sent successfully --------------------> ".format(counter))
             
             counter += 1 # This code increments the value of our counter by 1.
 
