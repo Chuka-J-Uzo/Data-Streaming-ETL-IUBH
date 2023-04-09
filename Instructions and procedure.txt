@@ -42,6 +42,21 @@ CREATE TABLE TRUCK_PARAMETER_MAP (
      );
 
 
+CREATE TABLE TRUCK_DISTANCE_CORRELATION (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `distance_covered` DOUBLE,
+    `time_elapsed` DOUBLE,
+    `correlation` DOUBLE
+);
+
+CREATE TABLE TRUCK_ENGINE_SPEED_CORRELATION (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `engine_speed` DOUBLE,
+    `time_elapsed` DOUBLE,
+    `correlation` DOUBLE
+);
+
+
 CREATE TABLE TRUCK_PARAMETER_MAP (
     `current_time` DATETIME,
     `road_elevation` FLOAT,
@@ -73,6 +88,9 @@ CREATE TABLE COMMODITIES_PRICES (
     `percent_change` DECIMAL(5, 2), \
     `volume` BIGINT
 );
+
+
+
 
 
 

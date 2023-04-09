@@ -23,7 +23,7 @@ def is_reachable(host, port):
     except:
         return False
 
-host = "172.17.0.4"
+host = "172.17.0.3"
 port = 3306
 
 if is_reachable(host, port):
@@ -37,7 +37,7 @@ else:
 # setup database connection
 user = 'root'
 password = 'root'
-host = '172.17.0.4'
+host = '172.17.0.3'
 port = '3306'
 database = 'KAFKA_DB'
 
@@ -79,7 +79,7 @@ producer = Producer(producer_config)
 
 def produce_truck_data():
     try:
-        fuel_tank_capacity = 250
+        fuel_tank_capacity = 600
         fuel_remaining = fuel_tank_capacity
         distance_travelled = 0
         counter = 0
@@ -110,13 +110,16 @@ def produce_truck_data():
         '''
         
         for i in range(2400000):
-            engine_speed = np.random.normal(80, 0.1)
-            time_elapsed = np.random.exponential(scale=1/10000000000000000000000000000000000000000000000000000) * 3600  # time elapsed in seconds
+            engine_speed = np.random.normal(80, 1)
+            time_elapsed = np.random.exponential(scale=1/10000) * 3600  # time elapsed in seconds
             distance_travelled = (time_elapsed / 3600) * engine_speed
-            distance_covered += distance_travelled
-            fuel_consumption_rate = np.interp(engine_speed, [80, 95], [0.01, 0.1])  # liters/km
-            fuel_consumed += distance_travelled * fuel_consumption_rate
-            fuel_remaining -= fuel_consumed
+            distance_covered += distance_travelled 
+            fuel_consumption_rate = np.interp(engine_speed, [80, 200], [0.01, 0.1])  # liters/km
+            #fuel_consumed += distance_travelled * fuel_consumption_rate
+            #fuel_remaining -= fuel_consumed
+            fuel_consumed += time_elapsed / 3600 * engine_speed * fuel_consumption_rate
+            fuel_remaining -= fuel_consumption_rate * distance_travelled
+
             if fuel_remaining <= 0:
                 break
             timestamp = datetime.now()
@@ -149,8 +152,7 @@ def produce_truck_data():
             
             connection.commit()
             
-            #counter += 1
-            print("Message [{}] sent successfully ------------------------> ".format(counter))
+            print("Message [{}] sent successfully --------------------> ".format(counter))
             
             counter += 1 # This code increments the value of our counter by 1.
 
