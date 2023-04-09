@@ -86,6 +86,18 @@ query = df2.select("speed_doubled").coalesce(1).writeStream \
     .trigger(processingTime="15 seconds") \
     .start() 
 
+
+# Print the received messages to the console
+query = df2.coalesce(1).writeStream \
+    .outputMode("append") \
+    .option("truncate", "false") \
+    .format("csv") \
+    .option("path", "./../spark_job_outputs/job_output_formats_folder/output.csv") \
+    .option("checkpointLocation", "./../spark_job_outputs/checkpoint_folder/") \
+    .option("maxRecordsPerFile", 100000) \
+    .trigger(processingTime="15 seconds") \
+    .start() 
+
 # Print the received messages to a file
 query = df3.select("distance_engine_ratio").coalesce(1).writeStream \
     .outputMode("append") \

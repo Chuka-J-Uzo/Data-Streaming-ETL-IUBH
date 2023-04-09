@@ -152,6 +152,7 @@ def produce_truck_data():
             
             connection.commit()
             
+            #counter += 1
             print("Message [{}] sent successfully --------------------> ".format(counter))
             
             counter += 1 # This code increments the value of our counter by 1.
