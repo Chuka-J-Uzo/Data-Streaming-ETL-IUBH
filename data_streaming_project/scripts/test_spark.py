@@ -5,7 +5,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 
 
 spark = SparkSession.builder \
-    .appName("KafkaStream") \
+    .appName("KafkaStream_1") \
     .getOrCreate()
 
 

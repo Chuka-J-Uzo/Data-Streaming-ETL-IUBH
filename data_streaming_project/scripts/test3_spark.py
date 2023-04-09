@@ -1,6 +1,9 @@
+import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, col, window
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType
+from pyspark.sql.functions import avg
+from pyspark.sql.functions import corr
 
 
 spark = SparkSession.builder \
@@ -38,7 +41,7 @@ schema = StructType([
     StructField("timestamp", StringType()),
     StructField("distance_covered", DoubleType()),
     StructField("engine_speed", DoubleType()),
-    StructField("fuel_consumed", DoubleType())
+    StructField("fuel_consumed", DoubleType())    
 ])
 
 # Convert Kafka messages into structured format using the defined schema
@@ -46,15 +49,11 @@ df = df.selectExpr("CAST(value AS STRING)") \
     .select(from_json(col("value"), schema).alias("json")) \
     .select("json.*")
 
-# Create a window of 5 minutes and calculate the average distance covered, engine speed and fuel consumed for each truck
+df2 = df.withColumn("speed_doubled", col("engine_speed") * 2.5)
 
 
-# Write the processed data to MySQL tables "truck_distance_correlation" and "truck_engine_speed_correlation" and "truck_fuel_consumption"
-
-    
 # Print the received messages to the console
-    
-query = df.coalesce(1).writeStream \
+query = df2.coalesce(1).writeStream \
     .outputMode("append") \
     .option("truncate", "false") \
     .format("csv") \
