@@ -5,14 +5,33 @@ from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 from pyspark.sql.functions import col, from_json, to_timestamp, avg
 from pyspark.sql.functions import avg
 from pyspark.sql.functions import col
+from pyspark.sql.functions import *
+import logging
+
+
 
 
 spark = SparkSession.builder \
-    .appName("KafkaStream2") \
+    .appName("Truck_Data_Stream") \
+    .config("spark.jars", "./../mysql_conn-JAR-FILE/mysql-connector-java-8.0.32.jar") \
+    .master("local[*]")\
     .getOrCreate()
+
+
+# set log level to DEBUG
+spark.sparkContext.setLogLevel("DEBUG")
+
 
 # Set partitionOverwriteMode to "static"
 spark.conf.set("spark.sql.sources.partitionOverwriteMode", "static")
+
+logger = spark._jvm.org.apache.log4j
+logging.getLogger("py4j").setLevel(logging.ERROR)
+logger.LogManager.getLogger("org.apache.spark").setLevel(logger.Level.DEBUG)
+logger.LogManager.getLogger("pyspark").setLevel(logger.Level.DEBUG)
+logger.LogManager.getLogger("pyspark.sql.execution.streaming.StreamExecution").setLevel(logger.Level.DEBUG)
+logger.LogManager.getLogger("pyspark.sql.execution.streaming.StreamExecutionRelation").setLevel(logger.Level.DEBUG)
+
 
 # Define Kafka consumer options
 kafka_bootstrap_servers = "localhost:9092"
@@ -130,6 +149,27 @@ query = df_combined_2.coalesce(1).writeStream \
     .option("checkpointLocation", "./../spark_job_outputs/df_combined_2_checkpoint_folder") \
     .option("maxRecordsPerFile", 100000) \
     .trigger(processingTime="15 seconds") \
+    .start()
+
+
+
+# Write to MySQL Table
+def write_to_mysql(df, epoch_id):
+    df.write \
+        .format("jdbc") \
+        .option("driver","com.mysql.cj.jdbc.Driver") \
+        .option("url", "jdbc:mysql://MySQL_Container:3306/KAFKA_DB") \
+        .option("path", "./../spark_job_outputs/job_output_formats_folder/df_output.csv") \
+        .option("dbtable", "SPARK_TABLE_TRANSFORMED") \
+        .option("mode", "append") \
+        .option("user", "root") \
+        .option("password", "root") \
+        .save()
+
+df.writeStream \
+    .outputMode("update") \
+    .option("checkpointLocation", "./../spark_job_outputs/df_checkpoint_folder") \
+    .foreachBatch(write_to_mysql) \
     .start()
 
 
