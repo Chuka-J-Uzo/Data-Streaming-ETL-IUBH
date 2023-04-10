@@ -4,7 +4,7 @@
 
 This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed data from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
-![Spark Query Metrics](/home/blackjack/Pictures/Screenshots/Spark Query Metrics.png "Spark Query Metrics")
+![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics")
 
 
 ## The Dataset
