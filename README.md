@@ -2,9 +2,10 @@
 
 # Real-time Streaming Application with Visualizer
 
-This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a file (CSV) source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
+This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed data from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
-![image](https://user-images.githubusercontent.com/95084188/218446337-c83e8779-ce42-4f0c-8db0-f55f88d4df17.png)
+![Spark Query Metrics](/home/blackjack/Pictures/Screenshots/Spark Query Metrics.png "Spark Query Metrics")
+
 
 ## The Dataset
 
@@ -13,11 +14,19 @@ The dataset was collected from a moving device, across a 70 km drive. An applica
 A snippet of the data looks like this:
 
 ```
-| time                | seconds_elapsed   | qz                | qy                | qx                 | qw                | roll              | pitch              | yaw               |
-+---------------------+-------------------+-------------------+-------------------+--------------------+-------------------+-------------------+--------------------+-------------------+
-| 28-10-2022 04:55:56 |   0.1645263671875 | 0.495980978012085 | 0.188404202461243 | 0.0901745185256004 | 0.842837631702423 | 0.244929581880569 | -0.345741897821426 | -1.02081370353699 |
-| 28-10-2022 04:55:56 |   0.1695009765625 | 0.495985835790634 | 0.188402488827705 | 0.0901651754975319 | 0.842836260795593 | 0.244933515787125 | -0.345724999904633 | -1.02082526683807 |
-| 28-10-2022 04:55:56 |  0.17450537109375 | 0.495990812778473 | 0.188399642705917 | 0.0901557356119156 | 0.842834949493408 | 0.244935348629951 | -0.345706850290298 | -1.02083742618561  
+INSERT INTO `TRUCK_PARAMETER_MAP` 
+(`id`, `timestamp`, `distance_covered`, `engine_speed`, `fuel_consumed`) VALUES
+
+(1922346, '2023-04-10 01:02:27', 0, 80.22, 0),
+(1922347, '2023-04-10 01:02:28', 0.01, 79.2, 0),
+(1922348, '2023-04-10 01:02:28', 0.02, 79.45, 0),
+(1922349, '2023-04-10 01:02:29', 0.03, 79.54, 0),
+(1922350, '2023-04-10 01:02:29', 0.03, 78.58, 0),
+(1922351, '2023-04-10 01:02:29', 0.03, 80.83, 0),
+(1922352, '2023-04-10 01:02:29', 0.05, 78.34, 0),
+(1922353, '2023-04-10 01:02:30', 0.06, 80.13, 0),
+(1922354, '2023-04-10 01:02:30', 0.07, 80.24, 0),
+(1922355, '2023-04-10 01:02:30', 0.13, 80.62, 0),  
 
 ```
 
@@ -46,41 +55,38 @@ As you observe in the dataset, the headers in the context of "Orientation" from 
   * Docker
 
   * Docker used containers below: 
-  * Portainer (Resource monitor and manager for Docker containers)
-  * Apache Kafka
-  * Apache ZooKeeper
-  * Confluent-All-In-One 7.3.1 containers:
-      * Control-centre 7.3.1
-      * Ksqldb-cli 7.3.1
-      * Ksql-datagen 7.3.1
-      * Ksqldb-server 7.3.1
-      * Server-connect-datagen:0.5.3-7.1.0
-      * Kafka-Rest-Proxy 7.3.1
-      * Schema-Registry 7.3.1
-      * Kafka Broker server 7.3.1
-      * ZooKeeper 7.3.1
-  * MySQL:```8.0.32-debian```
-  * phpmyadmin
-  * Apache Superset
+  * Docker for Visual Studio Code - by Microsoft (Create, manage, and debug containerized applications on Docker)
+  * Docker Explorer for Visual Studio Code - by Jun Han (Manage Docker Containers, Docker Images, Docker Hub and Azure Container Registry)
+  * Apache Kafka (image source: ubuntu/kafka:latest)
+  * Apache ZooKeeper  (image source: ubuntu/zookeeper:latest)
+  * Apache Spark (image source: ruslanmv/pyspark-elyra:latest)
+  * MySQL Server and Database:```version: 8.0.32-debian``` (image source: mysql:8.0.32-debian)
+  * PhpMyAdmin:  (image source: phpmyadmin:latest) 
+  * Prometheus for metrics logging (image source: prom/prometheus:latest)
+  * Node-exporter-prometheus (image source: quay.io/prometheus/node-exporter:latest)
+  * Grafana (image source: grafana/grafana:latest)
+  * Docker-Autocompose (image source: ghcr.io/red5d/docker-autocompose:latest)
 
 ## Features
 
-    1. Python Clients for connections:  We have used PyMySQL library and confluent-kafka python libraries.
+    1. Python Clients for connections:  We have used SqlAlchemy library and Confluent-Kafka python libraries to write our kafka producer code.
+
+    1.1 Then we also use another python client code to write our Pyspark code that instantly receives produced Kafka messages and processes them super fast.
     
     2. Data Ingestion: We have use the python script to collect and transport data from various sources to Apache Kafka.
     
-    3. Data Processing: Apache Kafka is used to process the incoming data in real-time and make it available for further analysis.
+    3. Data Processing: Apache Spark is used to process the incoming data in real-time and make it available for further analysis.
     
-    4. Data Storage: MySQL is used to store the messages as they are being ingested. Kafka ingests row-by-row.
+    4. Data Storage: MySQL Server and database is used to store the messages as they are being produced. Kafka produces and writes the messages row-by-row to our db, with an acknowledge and append function.
     
-    5. Monitoring: Confluent's Control-Centre dashboard is used to monitor the topics and resources in real-time.
+    5. Monitoring: Prometheus and Node exporter are to collect, log metrics and resources in real-time.
     
-    6. Data Visualization: Apache Superset is used to create interactive dashboards and visualizations for the ingested data.
+    6. Data Visualization: Grafana dashboard is used to create interactive dashboards and visualizations for the ingested data.
 
 ## Setup
 
     1. Docker pull or build all the images above.
-    2. Docker run the following containers: Apache ZooKeeper, Apache Kafka, MySQL, phpMyAdmin and the entire Confluent CP-all-in-one library (see docker_configs folder with yamls in the directory) and Apache Superset.
+    2. Docker run the following containers: Apache ZooKeeper, Apache Kafka, MySQL, phpMyAdmin (see docker_configs folder with yamls in the directory) and Grafana.
     3. Configure the python script to collect data from sources and transport it to Kafka.
     4. Configure Kafka to process the data
 
