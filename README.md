@@ -2,23 +2,11 @@
 
 # Real-time Streaming Application with Visualizer
 
-This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed data from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
-
-![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics") <br>
-*Image above: Spark Query Metrics generated while spark was running*
-
-![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization") <br>
-*Image above: DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
-
-!["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID") <br>
-*Image above: Query Stage ID and Task ID*
-
+This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed 1 million data instances from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
 ## The Dataset
 
-The dataset was collected from a moving device, across a 70 km drive. An application in a mobile device was used to extract the phone's "Orientation" values during this trip that lasted 2 - 3 hrs. 
-
-A snippet of the data looks like this:
+The streaming took over 3 days to generate 1 million messages. Kafka was generating at over 1000 messages per minute. (I was running this on a HDD not an SDD drive, so factor in the expected sluggishness and latency in the transfer rate with a HDD drive). The dataset looked like this:
 
 ```
 INSERT INTO `TRUCK_PARAMETER_MAP` 
@@ -36,6 +24,22 @@ INSERT INTO `TRUCK_PARAMETER_MAP`
 (1922355, '2023-04-10 01:02:30', 0.13, 80.62, 0),  
 
 ```
+<br>
+
+![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics") <br>
+*Image above: Spark Query Metrics generated while spark was running*
+
+<br>
+
+![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization") <br>
+*Image above: DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
+
+<br>
+
+!["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID") <br>
+*Image above: Query Stage ID and Task ID*
+
+<br>
 
 ## How the code works
 
@@ -136,7 +140,35 @@ Find ```requirements.txt``` file in the repository.
     confluent_kafka
     logging
 
-### Docker Running the Kafka Container:
+### Container ports used in this project:
+
+You can access the containers using the following URLs:
+
+    Apache Kafka: localhost:9092
+    Apache ZooKeeper: localhost:2181
+    MySQL Server: localhost:3306
+    PhpMyAdmin: localhost:8080
+    Prometheus: localhost:9090
+    Node-exporter: localhost:9100
+    Grafana: localhost:3000
+
+Link the containers: In your Python apps, ensure that you link the containers by using their respective container names as host names. For example, to connect to the MySQL server from your Python app, you would use mysql as the host name instead of localhost.
+
+### Environment variables
+
+Sometimes, Kafka or Spark or Zookeeper might not run because they can't communicate correctly, to ensure your computer sees their corresponding IP addresses, you can set the environment variables with LinuxOS environment by going to the directory  ```/etc/hosts``. Do this with elevated privileges by using:
+
+    sudo nano /etc/hosts
+
+
+You can find all IP addresses of your containers by running this command:
+
+    docker container inspect <container_name or container ID>
+
+Notice, how I add my docker container IP addresses and IDs into the hosts file.
+
+![Add Container IP to Hosts file](./data_streaming_project/image_assets/host_environments.jpg "Add Container IP to Hosts file") <br>
+*Image above: Add Container IPs to the hosts file*
 
 
 
@@ -215,6 +247,58 @@ After creating our tables in SQL, we must ensure that our Python code for produc
 !["Python > MySQL Output"](./data_streaming_project/image_assets/Python%20code%20to%20output%20to%20MySQL%20Database.png "Python > MySQL Output") <br>
 *Image above: Python code to output to MySQL Database*
 
+
+### Run PhpMyAdmin Container:
+
+We use this to easily navigate through our MySQL database and MySQL server. It's a simple but powerful Web UI framework for that purpose. 
+
+Now we install PhpMyAdmin - A web interface for MySQL:
+
+    docker pull phpmyadmin:latest
+
+After pulling phpMyAdmin, next, we need to run a MySQL server in Docker, and then the phpMyAdmin image needs to be linked to the running database container like this:
+    
+    docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p 8085:80 phpmyadmin
+
+Notice that our running container name "MySQL_Container" will then be linked to our phpMyAdmin image by adding "--link MySQL_Container:db" be sure to put the db at the end.
+
+
+### Run ZooKeeper Container:
+
+Fire up the Zookeeper container first of all.
+
+I downloaded the ZooKeeper image specific to Ubuntu 22.04 from https://hub.docker.com/r/ubuntu/zookeeper with this command:
+
+    docker pull ubuntu/zookeeper:3.1-22.04_beta
+
+Then we do a docker run to run the ZooKeeper container with:
+
+    docker run -d --name zookeeper-container -e TZ=UTC -p 2181:2181 ubuntu/zookeeper:3.1-22.04_beta
+
+### Run Kafka Container:
+
+We used ```docker pull ubuntu/kafka:3.1-22.04_beta``` to download the Kafka Image specific to Ubuntu 22.04 from ```https://hub.docker.com/r/ubuntu/kafka```. Then we do a docker run to run the kafka container.
+
+    docker run -d --name kafka-container -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+
+If Kafka can't find ZooKeeper which it needs to run, you might need to expose the Kafka port to the host network. You can do this by adding the --network host option to the docker run command:
+
+    docker run -d --name kafka-container --network host -e TZ=UTC -e KAFKA_ADVERTISED_HOST_NAME=host.docker.internal -e KAFKA_ADVERTISED_PORT=9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+
+Note that in this case, you do not need to publish the Kafka port with -p since the container is using the host network. Also, make sure that any firewall or security groups are not blocking traffic to the Kafka port.
+
+
+Now, create your Kafka Topic. We call ours "Truck-Data" (or a suitable name of your choice)
+
+    kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic Truck-Data
+
+Also, in creating a Kafka topic (If in VSCode, just right-click against the running Kafka broker or kafka server, then select "Attach shell"). :
+
+    ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic Truck-Data
+
+OR (to add more partitions, and data retention settings....etc, use below)
+
+    kafka-topics.sh --create --topic Truck-Data --partitions 3 --replication-factor 1 --bootstrap-server localhost:9092 --config segment.ms=10000 --config retention.ms=3600000
 
 
 ### Run Pyspark and Spark Container:
@@ -320,17 +404,29 @@ After you have docker built the image with (be sure to include the full-stop at 
 
 , thereafter, use this to run the container: 
 
-Without Elyra node visualizer:
+Without Elyra node visualizer (but contains Jupyter Notebook):
 
     docker run  --name pyspark-notebook  -it -p 8888:8888  -v /path to your volume folder:/home/jovyan/work  -d ruslanmv/pyspark-notebook
 
 
-With Elyra node visualizer (I used this):
+With Elyra node visualizer, and Jupyter notebook(I used this):
 
     docker run  --name pyspark-elyra -it -p 8888:8888 -v /path to your volume folder:/home/jovyan/work   -d ruslanmv/pyspark-elyra
 
 
 - Now check for jupyter URL(with token) in the pyspark container's logs. right-click on it an select "view logs".
+
+
+Finally, to run our python script, we use ```Spark-Submit`` function to consume our code this way:
+
+    spark-submit --master local[*] --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2  ./path-to-your-python-file.py
+
+
+The above ordinarily works fine, but if you run into error request for mysql-connector-java-8.0.32.jar files, you can try this after downloading the mysql-connector-java JAR file from the appropriate website:
+
+    spark-submit --master local[*] --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --jars /path_to/mysql-connector-java-8.0.32.jar  ./path-to-your-python-file.py
+
+If it works, visit http://localhost:4040 or http://localhost:8888/spark-submit to see your Spark job results.
 
 
 ### Docker Running Prometheus and Grafana Containers:

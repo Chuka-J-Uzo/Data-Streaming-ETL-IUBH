@@ -11,7 +11,7 @@ docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d my
 # Now we install phpMyAdmin - A web interface for MySQL
 $ docker pull phpmyadmin:latest
 
-# After pully phpMyAdmin, next, we need to run a MySQL server in Docker, and then the phpMyAdmin image needs to be linked to the running database container like this:
+# After pulling phpMyAdmin, next, we need to run a MySQL server in Docker, and then the phpMyAdmin image needs to be linked to the running database container like this:
 $ docker run --name phpmyadmin -d --link MySQL_Container:db --restart always  -p 8085:80 phpmyadmin
 # Notice that our running container name "MySQL_Container" will then be linked to our phpMyAdmin image by adding "--link MySQL_Container:db" be sure to put the db at the end.
 
