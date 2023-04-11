@@ -574,6 +574,16 @@ We use a docker pull to download it as follows:
 
     docker pull apache/nifi
 
+Run a simple service by using:
+
+    docker run --name nifi \
+    -p 8443:8443 \
+    -d \
+    apache/nifi:latest
+
+
+To see the Web UI for Nifi, you need to go to https://localhost:8443 NOT http://localhost:8443. By default NiFi is now secured with TLS, but 8443 is not the standard HTTPS port, thus it does not automatically redirect you to HTTPS if you only enter localhost
+
 For a minimal, connection to an LDAP server using SIMPLE authentication:
 
     docker run --name nifi \
