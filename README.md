@@ -633,6 +633,7 @@ To start Atlas overriding settings by environment variables (to support large nu
         -Xloggc:logs/gc-worker.log -verbose:gc -XX:+UseGCLogFileRotation \
         -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=1m -XX:+PrintGCDetails \
         -XX:+PrintHeapAtGC -XX:+PrintGCTimeStamps" \
+        -v ${PWD}/data:/apache-atlas/data \
         -p 21000:21000 \
         --name atlas \
         sburn/apache-atlas
@@ -663,5 +664,40 @@ To enable Data persistency: start Atlas with data directory mounted on the host
         --name atlas \
         sburn/apache-atlas
 
+
+##### Usage options for Apache Atlas
+
+To gracefully stop Atlas:
+
+    docker exec -ti atlas /apache-atlas/bin/atlas_stop.py
+
+To check Atlas startup script output:
+
+    docker logs atlas
+
+To check Atlas application.log (useful at the first run and for debugging during workload):
+
+    docker exec -ti atlas tail -f /apache-atlas/logs/application.log
+
+To run the example (this will add sample types and instances along with traits):
+
+    docker exec -ti atlas /apache-atlas/bin/quick_start.py
+
+##### Environment Variables for Apache Atlas
+
+The following environment variables are available for configuration:
+
+|          **Name**         |            **Default**            |                                                **Description**                                               |
+|:-------------------------:|:---------------------------------:|:------------------------------------------------------------------------------------------------------------:|
+| JAVA_HOME                 | /usr/lib/jvm/java-8-openjdk-amd64 | The java implementation to use. If JAVA_HOME is not found we expect java and jar to be in path               |
+| ATLAS_OPTS                |                                   | any additional java opts you want to set. This will apply to both client and server operations               |
+| ATLAS_CLIENT_OPTS         |                                   | any additional java opts that you want to set for client only                                                |
+| ATLAS_CLIENT_HEAP         |                                   | java heap size we want to set for the client. Default is 1024MB                                              |
+| ATLAS_SERVER_OPTS         |                                   | any additional opts you want to set for atlas service.                                                       |
+| ATLAS_SERVER_HEAP         |                                   | java heap size we want to set for the atlas server. Default is 1024MB                                        |
+| ATLAS_HOME_DIR            |                                   | What is is considered as atlas home dir. Default is the base location of the installed software              |
+| ATLAS_LOG_DIR             |                                   | Where log files are stored. Defatult is logs directory under the base install location                       |
+| ATLAS_PID_DIR             |                                   | Where pid files are stored. Defatult is logs directory under the base install location                       |
+| ATLAS_EXPANDED_WEBAPP_DIR |                                   | Where do you want to expand the war file. By Default it is in /server/webapp dir under the base install dir. |
 
 
