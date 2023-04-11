@@ -4,14 +4,14 @@
 
 This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed data from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
-![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics")
-*Spark Query Metrics*
+![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics") <br>
+*Image above: Spark Query Metrics generated while spark was running*
 
-![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization")
-*DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
+![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization") <br>
+*Image above: DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
 
-!["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID")
-*Query Stage ID and Task ID*
+!["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID") <br>
+*Image above: Query Stage ID and Task ID*
 
 
 ## The Dataset
@@ -47,14 +47,14 @@ The Kafka producer script simulates the movement of a truck by generating random
 Then the Spark data processing script uses the PySpark library to create a streaming pipeline that reads data from a Kafka topic and processes it. This code reads streaming data from Kafka, transforms it using PySpark DataFrame operations, and writes the output to files or console periodically. The code can be modified to read from different sources or write to different sinks based on the specific use case.
 Below is a brief summary of what the code does:
 
-    Imports necessary PySpark modules and logging module.
-    Sets up a SparkSession with specific configurations.
-    Defines the Kafka consumer options, including the topic to read from, group ID, and consumer settings.
-    Reads streaming data from Kafka and casts the value column to string type.
-    Parses the JSON-formatted messages from Kafka using a pre-defined schema.
-    Performs several transformations on the data, including filtering, selection, union, and computing new columns.
-    Writes the resulting data streams to a file or console in CSV format with the specified output mode, location, and trigger settings.
-    Starts the streaming query using the defined options and outputs.
+* Imports necessary PySpark modules and logging module.
+* Sets up a SparkSession with specific configurations.
+* Defines the Kafka consumer options, including the topic to read from, group ID, and consumer settings.
+* Reads streaming data from Kafka and casts the value column to string type.
+* Parses the JSON-formatted messages from Kafka using a pre-defined schema.
+* Performs several transformations on the data, including filtering, selection, union, and computing new columns.
+* Writes the resulting data streams to a file or console in CSV format with the specified output mode, location, and trigger settings.
+* Starts the streaming query using the defined options and outputs.
 
 
 
@@ -107,6 +107,25 @@ Below is a brief summary of what the code does:
 
 
 ## Getting Started
+
+Install Docker for Visual Studio Code and Docker Explorer for Visual Studio Code on your Ubuntu machine.
+
+1. Install Docker for Visual Studio Code and Docker Explorer for Visual Studio Code on your Ubuntu machine. If you run into issues, check the official Docker installation guide for Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+
+
+Pull Docker images: Pull the Docker images for the containers you want to use by running the following commands:
+
+        docker pull ubuntu/kafka:latest
+        docker pull ubuntu/zookeeper:latest
+        docker pull ruslanmv/pyspark-elyra:latest
+        docker pull mysql:8.0.32-debian
+        docker pull phpmyadmin:latest
+        docker pull prom/prometheus:latest
+        docker pull quay.io/prometheus/node-exporter:latest
+        docker pull grafana/grafana:latest
+
+
+
 
 1. The first step in getting started with this project is to download the latest version of Apache Superset by using the following command:
 
