@@ -125,23 +125,83 @@ Pull Docker images: Pull the Docker images for the containers you want to use by
         docker pull grafana/grafana:latest
 
 -----------------------
-bash:
-```
-2. $ docker pull apache/superset
-```
+### Docker Running MySQL server & Database:
+I installed MySQL docker image according to the linux debian on Ubuntu 22.04, but you can find other flavours on ```https://hub.docker.com/_/mysql) ```
 
-Once you have Superset installed, you can start the container using the following command:
+    docker pull mysql:8.0.32-debian
 
-bash:
-```
-3. docker run -d --name superset -p 8090:8088 apache/superset
-```
+Starting our MySQL instance (find this command and details from ```https://hub.docker.com/_/mysql) ```:
 
-This will start the container and map port ```8090``` on your local machine to port ```8088``` within the container. You can then access the Apache Superset UI by navigating to ```http://localhost:8090 ``` in your web browser.
+    docker run --name MySQL_Container -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql:8.0.32-debian
 
------------------
+For me, as seen above, I called the docker container "MySQL_Container".
 
-### Running Prometheus and Grafana Containers:
+Next, activate your MySQL shell by right-clicking against the MySQL_Container (In vscode) which is our MySQL server.
+
+Then you'll see this prompt waiting for us to login to MySQL ---> ```root@a20370fbdbfc:/# ``` 
+
+Now type this into the shell to login. We use ```'root'``` as ```username -u``` and ```'root' as -p password```. 
+
+The command will look like this ---->    ```mysql -u root  -p```  
+If that doesn't work, do this ------>     ```mysql --user=root --password=root``` 
+
+After running MySQL on docker, and you are trying to enter mysql prompt, but you get this error, ```ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)```, Just use the command below....replace with your container name and user name, so that it looks like ```sudo docker exec -it <container_name> mysql -u <user_name> -p```
+ 
+    sudo docker exec -it MySQL_Container mysql -u root -p
+
+OTHERWISE USE THIS BELOW:
+
+    mysql --user=root --password=root
+
+Once your login is successful, then we create a database to collect Kafka's producer messages. we will call the database "KAFKA_DB"
+
+      mysql> CREATE DATABASE KAFKA_DB;
+
+Then, we create a table inside this databse. To do this, we use the ```"use"``` command on the created DB as follows:
+
+      mysql> use KAFKA_DB;
+
+Then we create a Table using the schema or column names in the data we are trying to ingest. Our tables are called "INGESTED_TABLE_1", "TRUCK_PARAMETER_MAP", "TRUCK_DISTANCE_CORRELATION", "TRUCK_ENGINE_SPEED_CORRELATION". See below how we use SQL queries to create the respective tables.
+
+    CREATE TABLE INGESTED_TABLE_1 (time float, seconds_elapsed float,  qz float, qy float, qx float, qw float, roll float, pitch float, yaw float);
+
+  
+    CREATE TABLE TRUCK_PARAMETER_MAP (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `timestamp` DATETIME,
+            `distance_covered` FLOAT,
+            `engine_speed` FLOAT,
+            `fuel_consumed` FLOAT
+        );
+
+
+    CREATE TABLE TRUCK_DISTANCE_CORRELATION (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `distance_covered` DOUBLE,
+        `time_elapsed` DOUBLE,
+        `correlation` DOUBLE
+    );
+
+    CREATE TABLE TRUCK_ENGINE_SPEED_CORRELATION (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `engine_speed` DOUBLE,
+        `time_elapsed` DOUBLE,
+        `correlation` DOUBLE
+    );
+
+After creating our tables in SQL, we must ensure that our Python code for producing Kafka messages has a function that instructs Python to create a database schema for the messages produced. See what the corresponding code snippets in python will look like below: 
+
+
+!["Python > MySQL Schema"](./data_streaming_project/image_assets/python%20code%20with%20mysql%20table%20schema.png "Python > MySQL Schema") <br>
+*Image above: Python code with MySQL table schema*
+
+
+
+!["Python > MySQL Output"](./data_streaming_project/image_assets/Python%20code%20to%20output%20to%20MySQL%20Database.png "Python > MySQL Output") <br>
+*Image above: Python code to output to MySQL Database*
+
+
+### Docker Running Prometheus and Grafana Containers:
 
 After installing Prometheus, you will need a Node-exporter that helps to scrape metrics to be exported.
 
