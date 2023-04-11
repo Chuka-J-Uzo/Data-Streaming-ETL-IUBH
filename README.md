@@ -65,7 +65,7 @@ Below is a brief summary of what the code does:
 ## Prerequisites
 
  1. Docker installed on local machine or cloud IDEs.
- 2. Basic knowledge of Apache Kafka, MySQL, Superset, containerization in-general and data visualization.
+ 2. Basic knowledge of Apache Kafka, MySQL server and database handling, Apache Spark, containerization in-general and data visualization.
  3. Understanding of real-time streaming data, message brokering, resource handling and its processing.
  4. Linux OS makes life a lot easier. Avoid Windows OS when embarking on projects like this. 
 
@@ -88,19 +88,19 @@ Below is a brief summary of what the code does:
 
 ## Features
 
-    1. Python Clients for connections:  We have used SqlAlchemy library and Confluent-Kafka python libraries to write our kafka producer code.
+1. Python Clients for connections:  We have used SqlAlchemy library and Confluent-Kafka python libraries to write our kafka producer code.
 
-    1.1 Then we also use another python client code to write our Pyspark code that instantly receives produced Kafka messages and processes them super fast.
-    
-    2. Data Ingestion: We have use the python script to collect and transport data from various sources to Apache Kafka.
-    
-    3. Data Processing: Apache Spark is used to process the incoming data in real-time and make it available for further analysis.
-    
-    4. Data Storage: MySQL Server and database is used to store the messages as they are being produced. Kafka produces and writes the messages row-by-row to our db, with an acknowledge and append function.
-    
-    5. Monitoring: Prometheus and Node exporter are to collect, log metrics and resources in real-time.
-    
-    6. Data Visualization: Grafana dashboard is used to create interactive dashboards and visualizations for the ingested data.
+1.1 Then we also use another python client code to write our Pyspark code that instantly receives produced Kafka messages and processes them super fast.
+
+2. Data Ingestion: We have use the python script to collect and transport data from various sources to Apache Kafka.
+
+3. Data Processing: Apache Spark is used to process the incoming data in real-time and make it available for further analysis.
+
+4. Data Storage: MySQL Server and database is used to store the messages as they are being produced. Kafka produces and writes the messages row-by-row to our db, with an acknowledge and append function.
+
+5. Monitoring: Prometheus and Node exporter are to collect, log metrics and resources in real-time.
+
+6. Data Visualization: Grafana dashboard is used to create interactive dashboards and visualizations for the ingested data.
 
 
 ## Technical bottlenecks and mistakes faced throughout the project.
@@ -596,6 +596,72 @@ For a minimal, connection to an LDAP server using SIMPLE authentication:
     -e LDAP_URL='ldap://ldap:389' \
     -d \
     apache/nifi:latest
+
+
+
+## Run Apache ATLAS Containers:
+
+Download Apache Atlas Docker image here:
+
+    docker pull sburn/apache-atlas
+
+
+This Apache Atlas is built from the 2.3.0-release source tarball and patched to be run in a Docker container.
+
+Atlas is built with embedded HBase + Solr and it is pre-initialized, so you can use it right after image download without additional steps.
+
+###### Basic usage of Apache Atlas
+
+Start Apache Atlas in a container exposing Web-UI port 21000:
+
+    docker run -d \
+        -p 21000:21000 \
+        --name atlas \
+        sburn/apache-atlas
+
+Please, take into account that the first startup of Atlas may take up to few mins depending on host machine performance before web-interface become available at http://localhost:21000/
+
+Web-UI default credentials: ```admin / admin```
+
+To start Atlas overriding settings by environment variables (to support large number of metadata objects for example):
+
+    docker run --detach \
+        -e "ATLAS_SERVER_OPTS=-server -XX:SoftRefLRUPolicyMSPerMB=0 \
+        -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC \
+        -XX:+CMSParallelRemarkEnabled -XX:+PrintTenuringDistribution \
+        -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=dumps/atlas_server.hprof \
+        -Xloggc:logs/gc-worker.log -verbose:gc -XX:+UseGCLogFileRotation \
+        -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=1m -XX:+PrintGCDetails \
+        -XX:+PrintHeapAtGC -XX:+PrintGCTimeStamps" \
+        -p 21000:21000 \
+        --name atlas \
+        sburn/apache-atlas
+
+
+
+To explore logs: start Atlas exposing logs directory on the host
+
+    docker run --detach \
+        -v ${PWD}/atlas-logs:/apache-atlas/logs \
+        -p 21000:21000 \
+        --name atlas \
+        sburn/apache-atlas
+
+For custom configuration: start Atlas exposing conf directory on the host
+
+    docker run --detach \
+        -v ${PWD}/pre-conf:/apache-atlas/conf \
+        -p 21000:21000 \
+        --name atlas \
+        sburn/apache-atlas
+
+To enable Data persistency: start Atlas with data directory mounted on the host
+
+    docker run --detach \
+        -v ${PWD}/data:/apache-atlas/data \
+        -p 21000:21000 \
+        --name atlas \
+        sburn/apache-atlas
 
 
 
