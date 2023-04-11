@@ -173,7 +173,7 @@ Notice, how I add my docker container IP addresses and IDs into the hosts file.
 
 
 ### Docker Running MySQL server & Database Container:
-I installed MySQL docker image according to the linux debian on Ubuntu 22.04, but you can find other flavours on ```https://hub.docker.com/_/mysql) ```
+I installed MySQL docker image according to the linux debian on Ubuntu 22.04, but you can find other flavours on ```https://hub.docker.com/_/mysql ```
 
     docker pull mysql:8.0.32-debian
 
@@ -277,7 +277,7 @@ Then we do a docker run to run the ZooKeeper container with:
 
 ### Run Kafka Container:
 
-We used ```docker pull ubuntu/kafka:3.1-22.04_beta``` to download the Kafka Image specific to Ubuntu 22.04 from ```https://hub.docker.com/r/ubuntu/kafka```. Then we do a docker run to run the kafka container.
+We used ```docker pull ubuntu/kafka:3.1-22.04_beta``` to download the Kafka Image specific to Ubuntu 22.04 from https://hub.docker.com/r/ubuntu/kafka Then we do a docker run to run the kafka container.
 
     docker run -d --name kafka-container -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
 
@@ -498,3 +498,59 @@ Step 4: Install Grafana from docker website >> https://hub.docker.com/r/grafana/
 
 
 When you try to connect prometheus to in Grafana and you get this error: ```Err reading Prometheus: Post "http://localhost:9090/api/v1/query": dial tcp 127.0.0.1:9090: connect: connection refused```, you can just use the docker inspect command to find the IP address of the Prometheus container and then replace the localhost word with it.
+
+
+### Technical bottlenecks and mistakes faced throughout the project.
+
+ These bottlenecks faced were complex and required advanced technical knowledge in containerization, database management, data processing, and visualization.
+
+###### 1. Environment Setup Bottlenecks:
+
+* We encountered bottlenecks while setting up the environment required to run the project. These included setting up Docker, configuring and linking multiple containers, and installing necessary dependencies.
+
+* We faced challenges particularly with the correct version of Docker, setting up and linking Apache Kafka, Apache Zookeeper, and Apache Spark, as well as configuring MySQL, PhpMyAdmin, Prometheus, Node-exporter-prometheus, and Grafana.
+
+* These bottlenecks were complex and required advanced knowledge of containerization, database management, and monitoring tools.
+
+
+###### 2. Code Implementation Bottlenecks:
+
+* We faced bottlenecks when implementing the code for this project. These included correctly configuring Apache Spark to read data from Apache Kafka, writing code to process and analyze data, and writing code to visualize the data in Grafana.
+
+* We also encountered challenges when writing the PySpark code to read and process data from Kafka, as well as when visualizing the data in Grafana.
+
+
+###### 3. Performance Bottlenecks:
+
+* We experienced performance bottlenecks while running this project, which caused our code to run slowly or crash. These included issues with Kafka and Spark configuration, as well as memory and CPU usage.
+
+* We also encountered issues with slow Kafka processing due to incorrect Kafka partitioning and with Spark running out of memory due to incorrect Spark configuration.
+
+###### 4. Integration Bottlenecks:
+
+* We encountered bottlenecks when integrating different components of the project, such as Apache Kafka, Apache Spark, and Grafana.
+
+* Specifically, we had to integrate PySpark with Kafka to read and process data, and then integrate Grafana to visualize the processed data.
+
+
+###### 5. Data Management Bottlenecks:
+
+* We experienced bottlenecks when managing and storing data for the project. These included issues with data quality, data integrity, and data consistency.
+
+* Specifically, we had to manage and store data in MySQL, which required careful attention to data quality, data integrity, and data consistency.
+
+
+###### Below, is a Gantt of the second phase of challenges I encountered.
+
+|                            Task                            | Start Date |  End Date  | Duration |
+|:----------------------------------------------------------:|:----------:|:----------:|:--------:|
+| Setting up Docker environment                              | 2023-03-10 | 2023-03-12 | 3 days   |
+| Installing Apache Kafka and Zookeeper in Docker containers | 2023-03-12 | 2023-03-14 | 3 days   |
+| Writing Python Kafka Producer and Consumer code            | 2023-03-15 | 2023-03-18 | 4 days   |
+| Setting up MySQL Server and Database in Docker container   | 2023-03-19 | 2023-03-21 | 3 days   |
+| Writing Python MySQL code for database connection          | 2023-03-22 | 2023-03-23 | 2 days   |
+| Setting up Prometheus for metrics logging                  | 2023-03-24 | 2023-03-26 | 3 days   |
+| Writing Python Flask code for metrics endpoint             | 2023-03-27 | 2023-03-29 | 3 days   |
+| Setting up Grafana for visualization                       | 2023-03-30 | 2023-04-01 | 3 days   |
+| Writing Spark Streaming code to consume Kafka topic data   | 2023-04-02 | 2023-04-04 | 3 days   |
+|                                                            |            |            |          |
