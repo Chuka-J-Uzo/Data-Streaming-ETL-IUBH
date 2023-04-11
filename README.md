@@ -500,6 +500,48 @@ Step 4: Install Grafana from docker website >> https://hub.docker.com/r/grafana/
 When you try to connect prometheus to in Grafana and you get this error: ```Err reading Prometheus: Post "http://localhost:9090/api/v1/query": dial tcp 127.0.0.1:9090: connect: connection refused```, you can just use the docker inspect command to find the IP address of the Prometheus container and then replace the localhost word with it.
 
 
+
+### Run Apache/Nifi Containers:
+
+Get and install Docker images for Apache NiFi from https://hub.docker.com/r/apache/nifi
+
+This image currently supports running in standalone mode either unsecured or with user authentication provided through:
+
+    * Single User Authentication
+    * Mutual TLS with Client Certificates
+    * Lightweight Directory Access Protocol (LDAP)
+
+This image also contains the NiFi Toolkit (as of version 1.8.0) preconfigured to use either in secure and unsecure mode.
+
+We use a docker pull to download it as follows:
+
+    docker pull apache/nifi
+
+For a minimal, connection to an LDAP server using SIMPLE authentication:
+
+    docker run --name nifi \
+    -v /User/dreynolds/certs/localhost:/opt/certs \
+    -p 8443:8443 \
+    -e AUTH=ldap \
+    -e KEYSTORE_PATH=/opt/certs/keystore.jks \
+    -e KEYSTORE_TYPE=JKS \
+    -e KEYSTORE_PASSWORD=QKZv1hSWAFQYZ+WU1jjF5ank+l4igeOfQRp+OSbkkrs \
+    -e TRUSTSTORE_PATH=/opt/certs/truststore.jks \
+    -e TRUSTSTORE_PASSWORD=rHkWR1gDNW3R9hgbeRsT3OM3Ue0zwGtQqcFKJD2EXWE \
+    -e TRUSTSTORE_TYPE=JKS \
+    -e INITIAL_ADMIN_IDENTITY='cn=admin,dc=example,dc=org' \
+    -e LDAP_AUTHENTICATION_STRATEGY='SIMPLE' \
+    -e LDAP_MANAGER_DN='cn=admin,dc=example,dc=org' \
+    -e LDAP_MANAGER_PASSWORD='password' \
+    -e LDAP_USER_SEARCH_BASE='dc=example,dc=org' \
+    -e LDAP_USER_SEARCH_FILTER='cn={0}' \
+    -e LDAP_IDENTITY_STRATEGY='USE_DN' \
+    -e LDAP_URL='ldap://ldap:389' \
+    -d \
+    apache/nifi:latest
+
+
+
 ### Technical bottlenecks and mistakes faced throughout the project.
 
  These bottlenecks faced were complex and required advanced technical knowledge in containerization, database management, data processing, and visualization.
