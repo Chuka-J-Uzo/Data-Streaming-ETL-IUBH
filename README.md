@@ -141,7 +141,7 @@ This will start the container and map port ```8090``` on your local machine to p
 
 -----------------
 
-Running Prometheus and Grafana Containers:
+### Running Prometheus and Grafana Containers:
 
 After installing Prometheus, you will need a Node-exporter that helps to scrape metrics to be exported.
 
@@ -156,7 +156,7 @@ Step1: Follow this video to download Node-exporter first >> https://www.youtube.
     --path.rootfs=/host
 
 
-Step 2: Create Prometheus.yml (see files in the repository)
+Step 2: Create ```Prometheus.yml``` (see files in the repository)
 
     global:
     scrape_interval: 5s
