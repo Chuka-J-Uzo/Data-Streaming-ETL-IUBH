@@ -125,7 +125,22 @@ Pull Docker images: Pull the Docker images for the containers you want to use by
         docker pull grafana/grafana:latest
 
 -----------------------
-### Docker Running MySQL server & Database:
+### Pip Install Requirements 
+
+Find ```requirements.txt``` file in the repository.
+
+    numpy
+    pandas
+    matplotlib
+    sqlalchemy
+    confluent_kafka
+    logging
+
+### Docker Running the Kafka Container:
+
+
+
+### Docker Running MySQL server & Database Container:
 I installed MySQL docker image according to the linux debian on Ubuntu 22.04, but you can find other flavours on ```https://hub.docker.com/_/mysql) ```
 
     docker pull mysql:8.0.32-debian
@@ -199,6 +214,123 @@ After creating our tables in SQL, we must ensure that our Python code for produc
 
 !["Python > MySQL Output"](./data_streaming_project/image_assets/Python%20code%20to%20output%20to%20MySQL%20Database.png "Python > MySQL Output") <br>
 *Image above: Python code to output to MySQL Database*
+
+
+
+### Run Pyspark and Spark Container:
+
+Now install Pyspark 
+
+This application will create a jupyter notebook ready with Pyspark and Spark 3.1.2 with Hadoop 3.2
+
+This is one of the best images out ther, it comes bundled with Pyspark, Spark (with Hadoop) and OpenJDK Java 11. It can't get any better!! 😋
+
+If you haven't downloaded the Images, use this to do so:
+
+    docker pull ruslanmv/pyspark-elyra:latest
+
+In my case, I prefered to do a docker build of the image, so I used the docker build for Pyspark+Elyra link to install pyspark on docker as seen here: https://ruslanmv.com/blog/Docker-Container-with-Pyspark-and-Jupyter-and-Elyra
+
+For convenience, here's how my Dockerfile for the Pyspark+Elyra Image looked:
+
+```
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+ARG OWNER=jupyter
+ARG BASE_CONTAINER=$OWNER/scipy-notebook
+FROM $BASE_CONTAINER
+
+LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+
+# Fix DL4006
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+USER root
+
+# Spark dependencies
+# Default values can be overridden at build time
+# (ARGS are in lower case to distinguish them from ENV)
+ARG spark_version="3.1.2"
+ARG hadoop_version="3.2"
+ARG spark_checksum="2385CB772F21B014CE2ABD6B8F5E815721580D6E8BC42A26D70BBCDDA8D303D886A6F12B36D40F6971B5547B70FAE62B5A96146F0421CB93D4E51491308EF5D5"
+ARG openjdk_version="11"
+
+ENV APACHE_SPARK_VERSION="${spark_version}" \
+    HADOOP_VERSION="${hadoop_version}"
+ENV JUPYTER_ENABLE_LAB=yes
+RUN apt-get update --yes && \
+    apt-get install --yes --no-install-recommends \
+    "openjdk-${openjdk_version}-jre-headless" \
+    ca-certificates-java  \
+    curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+    
+RUN pip install pyarrow
+
+# Install nodejs
+# Node
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+RUN sudo apt-get install -y nodejs
+RUN echo "NODE Version:" && node --version
+RUN echo "NPM Version:" && npm --version
+# Install Elyra
+RUN  pip3 install --upgrade pip==20.2.4  && pip3 install --no-cache-dir  --upgrade  elyra[all]
+RUN jupyter lab  build --dev-build=False --minimize=False
+#  Install requirements
+#COPY requirements.txt ./
+#RUN pip3 install --no-cache-dir -r requirements.txt
+#RUN apt-get clean && rm requirements.txt
+
+# Spark installation
+WORKDIR /tmp
+RUN wget -q "https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" && \
+    echo "${spark_checksum} *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
+    tar xzf "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" -C /usr/local --owner root --group root --no-same-owner && \
+    rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
+
+WORKDIR /usr/local
+
+# Configure Spark
+ENV SPARK_HOME=/usr/local/spark
+ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info" \
+    PATH="${PATH}:${SPARK_HOME}/bin"
+
+RUN ln -s "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}" spark && \
+    # Add a link in the before_notebook hook in order to source automatically PYTHONPATH
+    mkdir -p /usr/local/bin/before-notebook.d && \
+    ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+
+# Fix Spark installation for Java 11 and Apache Arrow library
+# see: https://github.com/apache/spark/pull/27356, https://spark.apache.org/docs/latest/#downloading
+RUN cp -p "${SPARK_HOME}/conf/spark-defaults.conf.template" "${SPARK_HOME}/conf/spark-defaults.conf" && \
+    echo 'spark.driver.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf" && \
+    echo 'spark.executor.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf"
+
+USER ${NB_UID}
+
+
+
+
+WORKDIR "${HOME}"
+```
+
+After you have docker built the image with (be sure to include the full-stop at the end of notebook): 
+
+    docker build --rm -t ruslanmv/pyspark-notebook .
+
+, thereafter, use this to run the container: 
+
+Without Elyra node visualizer:
+
+    docker run  --name pyspark-notebook  -it -p 8888:8888  -v /path to your volume folder:/home/jovyan/work  -d ruslanmv/pyspark-notebook
+
+
+With Elyra node visualizer (I used this):
+
+    docker run  --name pyspark-elyra -it -p 8888:8888 -v /path to your volume folder:/home/jovyan/work   -d ruslanmv/pyspark-elyra
+
+
+- Now check for jupyter URL(with token) in the pyspark container's logs. right-click on it an select "view logs".
 
 
 ### Docker Running Prometheus and Grafana Containers:
