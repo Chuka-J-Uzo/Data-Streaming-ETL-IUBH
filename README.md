@@ -5,6 +5,13 @@
 This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed data from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
 ![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics")
+*Spark Query Metrics*
+
+![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization")
+*DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
+
+!["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID")
+*Query Stage ID and Task ID*
 
 
 ## The Dataset
@@ -30,17 +37,25 @@ INSERT INTO `TRUCK_PARAMETER_MAP`
 
 ```
 
-As you observe in the dataset, the headers in the context of "Orientation" from the moving device are the column names in the dataset. They are:
+## How the code works
 
-    ```time:``` The timestamp when the orientation data was recorded.
+The python code consists of two separate applications, one serving as a Kafka producer script and the other as a Spark data processing script.
 
-    ```seconds_elapsed:``` The number of seconds that have elapsed since the device was turned on (i.e., the uptime).
+The Kafka producer script simulates the movement of a truck by generating random values for engine speed and time elapsed. The script connects to a MySQL database and creates a table named 'TRUCK_PARAMETER_MAP'. The script then generates data for distance covered, fuel consumption rate, and fuel remaining. It checks if the fuel remaining is above 0 and sends the generated data as a JSON object to a Kafka broker using the 'confluent_kafka' package. The package specifies the Kafka broker address and port number, maximum number of messages and maximum size of messages buffered in memory, compression type, and compression level. The 'produce_truck_data' function includes a loop to generate data points for a truck at a rate of approximately 1 point every 4 milliseconds. The script also includes a function to test network and server connection. If the host is reachable, the script will start producing messages to Kafka.
 
-    ```qz, qy, qx, and qw:``` The components of the quaternion that represents the device's orientation. These values describe the device's rotation in 3D space.
 
-    ```roll, pitch, and yaw:``` The Euler angles that describe the device's orientation. These values represent the rotation around the X, Y, and Z axes, respectively.
+Then the Spark data processing script uses the PySpark library to create a streaming pipeline that reads data from a Kafka topic and processes it. This code reads streaming data from Kafka, transforms it using PySpark DataFrame operations, and writes the output to files or console periodically. The code can be modified to read from different sources or write to different sinks based on the specific use case.
+Below is a brief summary of what the code does:
 
-    The quaternion components ```qz, qy, qx, and qw``` are related to the ```Euler angles roll, pitch, and yaw``` through a mathematical transformation. The ```seconds_elapsed``` column is not directly related to the other columns, but it can be used to calculate the time difference between successive orientation measurements.
+    Imports necessary PySpark modules and logging module.
+    Sets up a SparkSession with specific configurations.
+    Defines the Kafka consumer options, including the topic to read from, group ID, and consumer settings.
+    Reads streaming data from Kafka and casts the value column to string type.
+    Parses the JSON-formatted messages from Kafka using a pre-defined schema.
+    Performs several transformations on the data, including filtering, selection, union, and computing new columns.
+    Writes the resulting data streams to a file or console in CSV format with the specified output mode, location, and trigger settings.
+    Starts the streaming query using the defined options and outputs.
+
 
 
 ## Prerequisites

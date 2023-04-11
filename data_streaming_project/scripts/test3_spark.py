@@ -77,7 +77,7 @@ df_select = df.select("timestamp", "distance_covered", "engine_speed", "fuel_con
 df2 = df.withColumn("speed_doubled", col("engine_speed") * 1.2)
 df3 = df.withColumn("distance_engine_ratio", col("distance_covered") / col("engine_speed"))
 
-# Union the two DataFrames
+# Merge the two DataFrames
 df_combined = df2.union(df3)
 # Compute the ratio between distance_covered and engine_speed
 df_combined = df_combined.withColumn("distance_engine_ratio", df_combined["distance_covered"] / df_combined["engine_speed"])

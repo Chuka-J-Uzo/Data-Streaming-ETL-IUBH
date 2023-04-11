@@ -74,9 +74,10 @@ producer_config = {'bootstrap.servers': '127.0.0.1:9092', # specifies the Kafka 
                    'compression.level': '6' # Compression level parameter for algorithm selected by configuration property compression.type.
                    }
 
+# Create an instance of the Producer class with the provided configuration.
 producer = Producer(producer_config)
 
-
+# A function to generate simulated truck data and send it to a message broker.
 def produce_truck_data():
     try:
         fuel_tank_capacity = 600
@@ -152,7 +153,6 @@ def produce_truck_data():
             
             connection.commit()
             
-            #counter += 1
             print("Message [{}] sent successfully --------------------> ".format(counter))
             
             counter += 1 # This code increments the value of our counter by 1.
