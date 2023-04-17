@@ -619,8 +619,9 @@ For a minimal, connection to an LDAP server using SIMPLE authentication:
 
 ## Run Apache ATLAS Containers:
 
-Apache ATLAS failed to run despite all efforts. We have logged the bug/problem in the Issues' section of this repository here https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/2
+Apache ATLAS failed to run despite all efforts. We have logged the bug/problem in the Issues' section of this repository. Click to see issue >>  https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/2
 
+However, if all works fine for you, here's an installation procedure to get Apache Atlas running.
 
 Download Apache Atlas Docker image here:
 
@@ -739,4 +740,4 @@ The following environment variables are available for configuration:
 
 ## Run Apache Ranger Container:
 
-Also we encountered a bug that prevented Apache Ranger from running. For this reason, we have been unable to use it to enforce access control to key containers like Kafka. Here, we document the issue as a bug requiring resolution: https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/1
+Also we encountered a bug that prevented Apache Ranger from running. For this reason, we have been unable to use it to enforce access control to key containers like Kafka. Here, we document the issue as a bug requiring resolution. Click to see issue >> https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/1
