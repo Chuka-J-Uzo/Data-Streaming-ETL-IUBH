@@ -4,6 +4,13 @@
 
 This "Data-Streaming-ETL-IUBH" repository is developed as a real-time streaming application that captures data from a python app that simulates streamed 1 million data instances from the movement of a truck as its source and ingests it into a data store for analysis and visualization. The goal is to provide a comprehensive solution that enables one to build, deploy and monitor your real-time data pipeline with ease.
 
+<br>
+
+![Pipeline diagram](./data_streaming_project/image_assets/Pipeline%20Diagram%20-%20PROJECT_DATA%20ENGINEERING.svg "Pipeline diagram") <br>
+*Image above: High-level pipeline diagram showing how the real-time application functions*
+
+<br>
+
 ## The Dataset
 
 The streaming took over 3 days to generate 1 million messages. Kafka was generating at over 1000 messages per minute. (I was running this on a HDD not an SDD drive, so factor in the expected sluggishness and latency in the transfer rate with a HDD drive). The dataset looked like this:
@@ -612,6 +619,9 @@ For a minimal, connection to an LDAP server using SIMPLE authentication:
 
 ## Run Apache ATLAS Containers:
 
+Apache ATLAS failed to run despite all efforts. We have logged the bug/problem in the Issues' section of this repository here https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/2
+
+
 Download Apache Atlas Docker image here:
 
     docker pull sburn/apache-atlas  
@@ -727,3 +737,6 @@ The following environment variables are available for configuration:
 | ATLAS_EXPANDED_WEBAPP_DIR |                                   | Where do you want to expand the war file. By Default it is in /server/webapp dir under the base install dir. |
 
 
+## Run Apache Ranger Container:
+
+Also we encountered a bug that prevented Apache Ranger from running. For this reason, we have been unable to use it to enforce access control to key containers like Kafka. Here, we document the issue as a bug requiring resolution: https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/1
