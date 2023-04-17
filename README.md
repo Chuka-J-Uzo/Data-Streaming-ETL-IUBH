@@ -676,6 +676,21 @@ To enable Data persistency: start Atlas with data directory mounted on the host
         sburn/apache-atlas
 
 
+##### Downloading Hooks for Apache Atlas
+
+Hooks will help use execute data lineage, data discovery etc.
+
+You can download the Apache Atlas source tarball using the wget command in Linux terminal. Open a terminal window and type the following command:
+
+```wget https://dlcdn.apache.org/atlas/2.0.0/apache-atlas-2.0.0-sources.tar.gz ```
+
+
+This will download the file to your current directory. You can then extract the contents of the tarball using the tar command:
+
+    tar -xzf apache-atlas-2.0.0-sources.tar.gz 
+
+
+
 ##### Usage options for Apache Atlas
 
 To gracefully stop Atlas:
