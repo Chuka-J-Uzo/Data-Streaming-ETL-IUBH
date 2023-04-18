@@ -337,32 +337,32 @@ I downloaded the ZooKeeper image specific to Ubuntu 22.04 from https://hub.docke
 
 Then we do a docker run to run the ZooKeeper container with:
 
-    docker run -d --name zookeeper-container -e TZ=UTC -p 2181:2181 ubuntu/zookeeper:3.1-22.04_beta
+    docker run -d --name zookeeper-container -e TZ=UTC -p 2181:2181 ubuntu/zookeeper:latest
 
 ### Run Kafka Container:
 
 We used ```docker pull ubuntu/kafka:3.1-22.04_beta``` to download the Kafka Image specific to Ubuntu 22.04 from https://hub.docker.com/r/ubuntu/kafka Then we do a docker run to run the kafka container.
 
-    docker run -d --name kafka-container -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+    docker run -d --name kafka-container -e TZ=UTC -p 9092:9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/latest
 
 If Kafka can't find ZooKeeper which it needs to run, you might need to expose the Kafka port to the host network. You can do this by adding the --network host option to the docker run command:
 
-    docker run -d --name kafka-container --network host -e TZ=UTC -e KAFKA_ADVERTISED_HOST_NAME=host.docker.internal -e KAFKA_ADVERTISED_PORT=9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:3.1-22.04_beta
+    docker run -d --name kafka-container --network host -e TZ=UTC -e KAFKA_ADVERTISED_HOST_NAME=host.docker.internal -v volume-STREAM-IUBH:/data_streaming_project  -e KAFKA_ADVERTISED_PORT=9092 -e ZOOKEEPER_HOST=host.docker.internal ubuntu/kafka:latest
 
 Note that in this case, you do not need to publish the Kafka port with -p since the container is using the host network. Also, make sure that any firewall or security groups are not blocking traffic to the Kafka port.
 
 
 Now, create your Kafka Topic. We call ours "Truck-Data" (or a suitable name of your choice)
 
-    kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic Truck-Data
+    kafka-topics --create --bootstrap-server localhost:9092 --replication-factor 2 --partitions 2 --topic Truck-Data
 
 Also, in creating a Kafka topic (If in VSCode, just right-click against the running Kafka broker or kafka server, then select "Attach shell"). :
 
-    ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic Truck-Data
+    ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 2 --partitions 2 --topic Truck-Data
 
 OR (to add more partitions, and data retention settings....etc, use below)
 
-    kafka-topics.sh --create --topic Truck-Data --partitions 3 --replication-factor 1 --bootstrap-server localhost:9092 --config segment.ms=10000 --config retention.ms=3600000
+    kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 2 --partitions 2 --topic Truck-Data
 
 
 ### Run Pyspark and Spark Container:
