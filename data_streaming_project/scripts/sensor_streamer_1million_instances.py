@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import socket
 import sqlalchemy
+import mysql.connector
 import ssl
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, DateTime
 from sqlalchemy.sql import insert
@@ -37,10 +38,10 @@ if is_reachable(host, port):
     subprocess.call(["cvlc", "--play-and-exit", mp3_file])
     for i in range(2):
         os.system("paplay /usr/share/sounds/freedesktop/stereo/service-login.oga")
-    
- 
+
 else:
     print("Host is not reachable! 😭")
+
 
 
 
@@ -52,18 +53,25 @@ port = '3306'
 database = 'KAFKA_DB'
 
 
+# Here we tried to encrypt our MySQL, but still kept getting errors from the ca.pem location or that sql engine won't connect.
+'''
 # specify SSL parameters
 ssl_args = {
     'ssl': {
-        'cert': './../kafka-ssl/ca-cert',
-        'key': './..',
-        'ca': '/path/to/ca.pem',
+        'cert': '/data_streaming_project/mysql-ssl/client-cert.pem',
+        'key': '/data_streaming_project/mysql-ssl/client-key.pem',
+        'ca': '/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/mysql-ssl/ca.pem',
         'check_hostname': False
     }
 }
 
 
+ssl_context = ssl.create_default_context(cafile='/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/mysql-ssl/ca.pem')
+engine = create_engine('mysql+mysqldb://{}:{}@{}:{}/{}?ssl_ca=/path/to/ca.pem&ssl_cert=/path/to/client-cert.pem&ssl_key=/path/to/client-key.pem'.format(user, password, host, port, database), echo=True)
 
+'''
+   
+# Connect to our database
 engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(user, password, host, port, database))
 connection = engine.connect()
 

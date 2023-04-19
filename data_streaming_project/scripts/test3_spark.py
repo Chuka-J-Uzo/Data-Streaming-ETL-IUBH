@@ -19,7 +19,7 @@ spark = SparkSession.builder \
 
 
 # set log level to DEBUG
-spark.sparkContext.setLogLevel("DEBUG")
+spark.sparkContext.setLogLevel("INFO")
 
 
 # Set partitionOverwriteMode to "static"
@@ -174,6 +174,9 @@ df.writeStream \
 
 
 
+'''
+Here we start the streaming SparkSQL queries which we wrote above. 
+'''
 # Start the streaming query and wait for it to finish
 query.awaitTermination()
 
