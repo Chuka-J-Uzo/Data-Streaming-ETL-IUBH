@@ -1,13 +1,17 @@
+import os
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import socket
 import sqlalchemy
+import ssl
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, DateTime
 from sqlalchemy.sql import insert
 from sqlalchemy.exc import IntegrityError
 from confluent_kafka import Producer
+import subprocess
+
 
 
 
@@ -28,7 +32,13 @@ port = 3306
 
 if is_reachable(host, port):
     print("\n Hurray! Host is now reachable on " , host , "and port number:" , port)
-    print("\n Kafka is now producing messages below.....🥳 \n")     
+    print("\n Kafka about to start producing messages below.....🥳 \n") 
+    mp3_file = "data_streaming_project/audio_message_alerts/kafka-started-alert.mp3"
+    subprocess.call(["cvlc", "--play-and-exit", mp3_file])
+    for i in range(2):
+        os.system("paplay /usr/share/sounds/freedesktop/stereo/service-login.oga")
+    
+ 
 else:
     print("Host is not reachable! 😭")
 
@@ -40,6 +50,19 @@ password = 'root'
 host = '172.17.0.3'
 port = '3306'
 database = 'KAFKA_DB'
+
+
+# specify SSL parameters
+ssl_args = {
+    'ssl': {
+        'cert': './../kafka-ssl/ca-cert',
+        'key': './..',
+        'ca': '/path/to/ca.pem',
+        'check_hostname': False
+    }
+}
+
+
 
 engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(user, password, host, port, database))
 connection = engine.connect()
@@ -110,12 +133,12 @@ def produce_truck_data():
             # if records exist, continue from the last recorded values
             distance_covered = last_record.distance_covered
             fuel_consumed = last_record.fuel_consumed
+
         
-        
+        # initialize a message counter variable for the simulated truck in motion
         counter = 1
-        
         '''
-        The "counter = 1" line of code above, initializes 
+        The "counter = 1" function above, initializes 
         counter to a value of 1. It is used to count 
         or index our "Message sent successfully" delivery message 
         elements used below in a program loop or 
@@ -124,6 +147,21 @@ def produce_truck_data():
         represent a numerical value assigned to a 
         variable for use later on in our program.
         '''
+         
+        # initialize a message counter variable as message delivery alerts
+        message_counter = 0
+        '''
+        This message_counter variable is to make the 
+        program beep for every 100 messages Kafka produces, 
+        we can add a counter variable that increments for 
+        every message produced. Once the counter variable 
+        reaches 100, we then play a sound using the "os" library 
+        in Python. Below we add a few modifications after 
+        the line of code: "fuel_consumed": np.round(fuel_consumed, 2)} 
+        ''' 
+        
+        
+        
         
         for i in range(2400000):
             engine_speed = np.random.normal(80, 1)
@@ -143,6 +181,32 @@ def produce_truck_data():
                     "distance_covered": np.round(distance_covered, 2),
                     "engine_speed": np.round(engine_speed, 2),
                     "fuel_consumed": np.round(fuel_consumed, 2)}
+            
+            '''
+            This second code block of the message_counter variable is where we now
+            make the program to beep for every 100 messages Kafka produces, 
+            we can add a counter variable that increments for 
+            every message produced. Once the counter variable 
+            reaches 100, we then play a sound using the "os" library 
+            in Python. The beep function below ends at the comment and line:
+             # reset message counter,
+               message_counter = 0  
+
+            ''' 
+
+            # increment message counter
+            message_counter += 1
+            
+            # check if message counter reaches 100
+            if message_counter == 100:
+                # play a beep sound
+                os.system("paplay /usr/share/sounds/freedesktop/stereo/complete.oga")
+                
+                # reset message counter
+                message_counter = 0
+
+
+            # Send our messages to Kafka topic
             producer.produce("Truck-Data", value=str(data).encode())
             producer.flush() # We add a flush here to ensure messages are delivered before moving to next iteration
             
