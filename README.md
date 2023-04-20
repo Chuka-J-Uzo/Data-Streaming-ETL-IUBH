@@ -34,17 +34,17 @@ INSERT INTO `TRUCK_PARAMETER_MAP`
 <br>
 
 ![Spark Query Metrics](./data_streaming_project/image_assets/Spark%20Query%20Metrics.png "Spark Query Metrics") <br>
-*Image above: Spark Query Metrics generated while spark was running*
+*Image above: Spark Query Metrics generated from this project while Spark was running*
 
 <br>
 
 ![DAG - Visualization](./data_streaming_project/image_assets/DAG%20(Directed%20Acyclic%20Graph)%20visualization.png "DAG - Visualization") <br>
-*Image above: DAG (Directed Acyclic Graph) Visualization of our Spark Logic.*
+*Image above: DAG (Directed Acyclic Graph) Visualization of our Spark Logic while Spark was processing Kafka messages.*
 
 <br>
 
 !["Query Stage ID and Task ID"](./data_streaming_project/image_assets/Query%20Stage%20ID%20and%20Task%20ID.png "Query Stage ID and Task ID") <br>
-*Image above: Query Stage ID and Task ID*
+*Image above: Query Stage ID and Task ID during Spark processing*
 
 <br>
 
@@ -312,6 +312,10 @@ After creating our tables in SQL, we must ensure that our Python code for produc
 *Image above: Python code to output to MySQL Database*
 
 
+!["MySQL database"](./data_streaming_project/image_assets/TRUCK_PARAMETER_MAP.png "MySQL database") <br>
+*Image above: PhpMyAdmin and MySQL Server for MySQL Database displaying the table "TRUCK_PARAMETER_MAP" that hold our streamed Kafka messages.*
+
+
 ### Run PhpMyAdmin Container:
 
 We use this to easily navigate through our MySQL database and MySQL server. It's a simple but powerful Web UI framework for that purpose. 
@@ -496,7 +500,7 @@ If it works, visit http://localhost:4040 to see your Spark job results. Below is
 ![SPARK WEB UI](./data_streaming_project/image_assets/SPARK_WEB_UI-video.gif "SPARK WEB UI") <br>
 *Video above: Actual demonstration of the Spark Web UI while processing the Kafka messages in this project*
 <br>
-*Caption: This is a caption for the video.*
+
 
 
 
@@ -575,12 +579,37 @@ Ensure you cd into the container containing the prometheus.yml before running th
     docker run -d --name prometheus -p 9090:9090 -v $PWD/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
 
 
+
+![PROMETHEUS UI](./data_streaming_project/image_assets/Prometheus_dashboard.gif "PROMETHEUS UI") <br>
+*Video above: Actual demonstration of our Prometheus Dashboard visualizing scraped Kafka metrics from Prometheus and MySQL Database in this project*
+<br>
+
+![PROMETHEUS UI](./data_streaming_project/image_assets/Prometheus%20Time%20Series%20.png "PROMETHEUS UI") <br>
+*Video above: Screenshot of demonstration of our Prometheus Dashboard visualizing scraped Kafka metrics from Prometheus and MySQL Database*
+*Notice the use of PromQL functions like '''scrape_duration_seconds{instance="172.17.0.2:4040", job="spark"}''' to run transformations on our scraped metrics*
+<br>
+
+
+
+
+
 Step 4: Install Grafana from docker website >> https://hub.docker.com/r/grafana/grafana
 
     docker run -d --name=grafana -p 3000:3000 grafana/grafana
 
 
 When you try to connect prometheus to in Grafana and you get this error: ```Err reading Prometheus: Post "http://localhost:9090/api/v1/query": dial tcp 127.0.0.1:9090: connect: connection refused```, you can just use the docker inspect command to find the IP address of the Prometheus container and then replace the localhost word with it.
+
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafana_dashboard.gif "GRAFANA DASHBOARD UI") <br>
+*Video above: Actual demonstration of our GRAFANA DASHBOARD visualizing scraped Kafka metrics from Prometheus and MySQL Database in this project*
+<br>
+
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_15.png "GRAFANA DASHBOARD UI") <br>
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_1.png "GRAFANA DASHBOARD UI") <br>
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_11.png "GRAFANA DASHBOARD UI") <br>
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_12.png "GRAFANA DASHBOARD UI") <br>
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_13.png "GRAFANA DASHBOARD UI") <br>
+![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_14.png "GRAFANA DASHBOARD UI") <br>
 
 
 
