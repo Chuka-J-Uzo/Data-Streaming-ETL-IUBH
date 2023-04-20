@@ -585,8 +585,8 @@ Ensure you cd into the container containing the prometheus.yml before running th
 <br>
 
 ![PROMETHEUS UI](./data_streaming_project/image_assets/Prometheus%20Time%20Series%20.png "PROMETHEUS UI") <br>
-*Video above: Screenshot of demonstration of our Prometheus Dashboard visualizing scraped Kafka metrics from Prometheus and MySQL Database*
-*Notice the use of PromQL functions like '''scrape_duration_seconds{instance="172.17.0.2:4040", job="spark"}''' to run transformations on our scraped metrics*
+*Image above: Screenshot of demonstration of our Prometheus Dashboard visualizing scraped Kafka metrics from Prometheus and MySQL Database* <br>
+*Notice the use of PromQL functions like `scrape_duration_seconds{instance="172.17.0.2:4040", job="spark"}` to run transformations on our scraped metrics*
 <br>
 
 
@@ -611,57 +611,6 @@ When you try to connect prometheus to in Grafana and you get this error: ```Err 
 ![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_13.png "GRAFANA DASHBOARD UI") <br>
 ![GRAFANA DASHBOARD UI](./data_streaming_project/image_assets/grafa_14.png "GRAFANA DASHBOARD UI") <br>
 
-
-
-### Run Apache/Nifi Containers:
-
-Get and install Docker images for Apache NiFi from https://hub.docker.com/r/apache/nifi
-
-This image currently supports running in standalone mode either unsecured or with user authentication provided through:
-
-    * Single User Authentication
-    * Mutual TLS with Client Certificates
-    * Lightweight Directory Access Protocol (LDAP)
-
-This image also contains the NiFi Toolkit (as of version 1.8.0) preconfigured to use either in secure and unsecure mode.
-
-We use a docker pull to download it as follows:
-
-    docker pull apache/nifi
-
-Run a simple service by using:
-
-    docker run --name nifi \
-    -p 8443:8443 \
-    -d \
-    apache/nifi:latest
-
-
-To see the Web UI for Nifi, you need to go to https://localhost:8443 NOT http://localhost:8443. By default NiFi is now secured with TLS, but 8443 is not the standard HTTPS port, thus it does not automatically redirect you to HTTPS if you only enter localhost
-
-For a minimal, connection to an LDAP server using SIMPLE authentication:
-
-    docker run --name nifi \
-    -v /home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/localhosts:/opt/certs \
-    -p 8443:8443 \
-    -e AUTH=ldap \
-    -e SSL_ENABLED=false \
-    -e KEYSTORE_PATH=data_streaming_project/localhosts/keystore.jks \
-    -e KEYSTORE_TYPE=JKS \
-    -e KEYSTORE_PASSWORD=0000 \
-    -e TRUSTSTORE_PATH=data_streaming_project/localhosts/keystore.jks \
-    -e TRUSTSTORE_PASSWORD=0000 \
-    -e TRUSTSTORE_TYPE=JKS \
-    -e INITIAL_ADMIN_IDENTITY='cn=admin,dc=example,dc=org' \
-    -e LDAP_AUTHENTICATION_STRATEGY='SIMPLE' \
-    -e LDAP_MANAGER_DN='cn=admin,dc=example,dc=org' \
-    -e LDAP_MANAGER_PASSWORD='password' \
-    -e LDAP_USER_SEARCH_BASE='dc=example,dc=org' \
-    -e LDAP_USER_SEARCH_FILTER='cn={0}' \
-    -e LDAP_IDENTITY_STRATEGY='USE_DN' \
-    -e LDAP_URL='ldap://ldap:389' \
-    -d \
-    apache/nifi:latest
 
 
 
@@ -768,24 +717,62 @@ To run the example (this will add sample types and instances along with traits):
 
     docker exec -ti atlas /apache-atlas/bin/quick_start.py
 
-##### Environment Variables for Apache Atlas
+<br>
 
-The following environment variables are available for configuration:
-
-|          **Name**         |            **Default**            |                                                **Description**                                               |
-|:-------------------------:|:---------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| JAVA_HOME                 | /usr/lib/jvm/java-8-openjdk-amd64 | The java implementation to use. If JAVA_HOME is not found we expect java and jar to be in path               |
-| ATLAS_OPTS                |                                   | any additional java opts you want to set. This will apply to both client and server operations               |
-| ATLAS_CLIENT_OPTS         |                                   | any additional java opts that you want to set for client only                                                |
-| ATLAS_CLIENT_HEAP         |                                   | java heap size we want to set for the client. Default is 1024MB                                              |
-| ATLAS_SERVER_OPTS         |                                   | any additional opts you want to set for atlas service.                                                       |
-| ATLAS_SERVER_HEAP         |                                   | java heap size we want to set for the atlas server. Default is 1024MB                                        |
-| ATLAS_HOME_DIR            |                                   | What is is considered as atlas home dir. Default is the base location of the installed software              |
-| ATLAS_LOG_DIR             |                                   | Where log files are stored. Defatult is logs directory under the base install location                       |
-| ATLAS_PID_DIR             |                                   | Where pid files are stored. Defatult is logs directory under the base install location                       |
-| ATLAS_EXPANDED_WEBAPP_DIR |                                   | Where do you want to expand the war file. By Default it is in /server/webapp dir under the base install dir. |
+# Unfinished tasks and Bugs in this project
 
 
-## Run Apache Ranger Container:
+##### 1. SSL in Kafka, MySQL and Spark failed repeatedly
 
-Also we encountered a bug that prevented Apache Ranger from running. For this reason, we have been unable to use it to enforce access control to key containers like Kafka. Here, we document the issue as a bug requiring resolution. Click to see issue >> https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/1
+Our producer config in the Kafka code kept failing on introduction of SSL variables. To create our SSL files we attempted using OpenSSL to create the files required files `('ca-key.pem,  ca.pem,  client-cert.pem, client-csr.pem,  client-key.pem)`, but it kept failing with a error saying it could not the location of `ca.pem`. We then tried using absolute file paths with no success. We also adjusted the `server.properties`, adding locations to our SSL files with no success.
+ 
+##### 2. Data Lineage, Data Discovery with Apache Atlas Container:
+
+After successfully setting up Atlas and firing up the Web UI, we had an issue getting it to scrape our Kafka messages or Spark Jobs. There is sparse documentation on this subject using Atlas. This will require more searches and experimenting.
+##### 3. Apache Ranger Container:
+
+We encountered a bug that prevented Apache Ranger from running. For this reason, we have been unable to use it to enforce access control to key containers like Kafka. Here, we document the issue as a bug requiring resolution. Click to see issue >> https://github.com/Chuka-J-Uzo/Data-Streaming-ETL-IUBH/issues/1
+
+##### 4. Writing Apache Spark results to MySQL databases: 
+
+The Spark SQL code below refused to write our messages to our MySQL database, no matter what we tried. There is a possibility there was a schema disparity between the destination table and the processed messages we were trying to push to it.
+
+```
+# Write to MySQL Table
+def write_to_mysql(df, epoch_id):
+    df.write \
+        .format("jdbc") \
+        .option("driver","com.mysql.cj.jdbc.Driver") \
+        .option("url", "jdbc:mysql://MySQL_Container:3306/KAFKA_DB") \
+        .option("path", "./../spark_job_outputs/job_output_formats_folder/df_output.csv") \
+        .option("dbtable", "SPARK_TABLE_TRANSFORMED") \
+        .option("mode", "append") \
+        .option("user", "root") \
+        .option("password", "root") \
+        .save()
+```
+
+##### 5. Machine Learning code on our processed Apache Spark results kept failing: 
+
+Spark refused to complete the machine learning implementation on our processed Spark results. It kept failing with the following error:
+
+```
+    Traceback (most recent call last):
+    File "/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/scripts/ml_function.py", line 64, in <module>
+        model = pipeline.fit(data)
+    File "/usr/local/spark/python/lib/pyspark.zip/pyspark/ml/base.py", line 205, in fit
+    File "/usr/local/spark/python/lib/pyspark.zip/pyspark/ml/pipeline.py", line 132, in _fit
+    File "/usr/local/spark/python/lib/pyspark.zip/pyspark/ml/base.py", line 262, in transform
+    File "/usr/local/spark/python/lib/pyspark.zip/pyspark/ml/wrapper.py", line 400, in _transform
+    File "/usr/local/spark/python/lib/py4j-0.10.9.5-src.zip/py4j/java_gateway.py", line 1321, in __call__
+```
+
+We tried several functions and possibilities like 
+```
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import RandomForestClassifier
+from pyspark.ml import Pipeline
+from pyspark.ml.classification import LogisticRegression
+```
+
+The problems always emanated from the ```model = pipeline.fit(data)``` section of our codes.
