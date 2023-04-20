@@ -490,7 +490,12 @@ The above ordinarily works fine, but if you run into error request for mysql-con
 
     spark-submit --master local[*] --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 --jars /path_to/mysql-connector-java-8.0.32.jar  ./path-to-your-python-file.py
 
-If it works, visit http://localhost:4040 or http://localhost:8888/spark-submit to see your Spark job results.
+If it works, visit http://localhost:4040 to see your Spark job results. Below is a video and screenshots of Spark processing the Kafka messages.
+
+
+<iframe width="560" height="315" src="https://youtu.be/CATnOikVq5s/embed/<video_id>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> <br>
+*Caption: This is a caption for the video.*
+
 
 
 ### Docker Running Prometheus and Grafana Containers:
@@ -510,17 +515,29 @@ Step1: Follow this video to download Node-exporter first >> https://www.youtube.
 
 Step 2: Create ```Prometheus.yml``` (see files in the repository)
 
-    global:
-    scrape_interval: 5s
-    external_labels:
-        monitor: 'node'
-    scrape_configs:
-    - job_name: 'prometheus'
-        static_configs:
-        - targets: ['192.168.88.97:9090'] ## IP Address of the localhost
-    - job_name: 'node-exporter'
-        static_configs:
-        - targets: ['192.168.88.97:9100'] ## IP Address of the localhost
+```
+global:
+  scrape_interval: 5s
+  external_labels:
+    monitor: 'node'
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['192.168.88.97:9090'] ## IP Address of the localhost
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['192.168.88.97:9100'] ## IP Address of the localhost
+
+  - job_name: 'spark'
+    static_configs:
+      - targets: ['172.17.0.2:4040', '172.17.0.2:8080', '172.17.0.2:7077']    
+      
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['192.168.88.97:9092']
+  
+```
       
 
 ```
