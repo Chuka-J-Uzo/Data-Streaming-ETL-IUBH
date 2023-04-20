@@ -495,9 +495,11 @@ If it works, visit http://localhost:4040 to see your Spark job results. Below is
 
 <iframe width="560" height="315" src="https://www.youtube.com/watch?v=CATnOikVq5s/embed/<video_id>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> 
 
-[![Now in Android: 55]          // Title
-(https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg)] // Thumbnail
-(https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55")    // Video Link
+[Caption for the video](https://www.youtube.com/watch?v=CATnOikVq5s<video_id>)
+
+[![Prometheus Dashboard](https://img.youtube.com/vi/CATnOikVq5s/data_streaming_project/image_assets/Prometheus Time Series .png)](https://www.youtube.com/watch?v=CATnOikVq5s "Prometheus Dashboard")
+
+
 <br>
 *Caption: This is a caption for the video.*
 
