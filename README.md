@@ -493,7 +493,12 @@ The above ordinarily works fine, but if you run into error request for mysql-con
 If it works, visit http://localhost:4040 to see your Spark job results. Below is a video and screenshots of Spark processing the Kafka messages.
 
 
-<iframe width="560" height="315" src="https://youtu.be/CATnOikVq5s/embed/<video_id>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> <br>
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=CATnOikVq5s/embed/<video_id>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> 
+
+[![Now in Android: 55]          // Title
+(https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg)] // Thumbnail
+(https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55")    // Video Link
+<br>
 *Caption: This is a caption for the video.*
 
 
