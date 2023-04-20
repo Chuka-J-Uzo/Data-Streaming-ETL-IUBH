@@ -493,13 +493,8 @@ The above ordinarily works fine, but if you run into error request for mysql-con
 If it works, visit http://localhost:4040 to see your Spark job results. Below is a video and screenshots of Spark processing the Kafka messages.
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=CATnOikVq5s/embed/<video_id>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> 
-
-[Caption for the video](https://www.youtube.com/watch?v=CATnOikVq5s<video_id>)
-
-[![Prometheus Dashboard](https://img.youtube.com/vi/CATnOikVq5s/data_streaming_project/image_assets/Prometheus Time Series .png)](https://www.youtube.com/watch?v=CATnOikVq5s "Prometheus Dashboard")
-
-
+![SPARK WEB UI](./data_streaming_project/image_assets/SPARK_WEB_UI-video.gif "SPARK WEB UI") <br>
+*Video above: Actual demonstration of the Spark Web UI while processing the Kafka messages in this project*
 <br>
 *Caption: This is a caption for the video.*
 
