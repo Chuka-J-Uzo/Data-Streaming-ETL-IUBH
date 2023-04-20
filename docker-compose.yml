@@ -1,5 +1,8 @@
 version: "3.6"
 services:
+
+
+
   MySQL_Container:
     command:
       - "mysqld"
@@ -18,14 +21,42 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:04"
+    mac_address: " "
     network_mode: "bridge"
     ports:
       - "3306:3306/tcp"
     volumes:
       - "1117dd6aac2f2a558c3f6b23c287c1d765ed46330ce5b8da286834225747433e:/var/lib/mysql"
-
-
+      
+      
+      
+  atlas:
+    command:
+      - "/bin/bash"
+      - "-c"
+      - "/apache-atlas/bin/atlas_start.py; tail -fF /apache-atlas/logs/application.log"
+    container_name: "atlas"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "TZ=Etc/UTC"
+      - "MAVEN_OPTS=-Xms2g -Xmx2g"
+      - "JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64"
+    hostname: "04a46b5a92fa"
+    image: "sburn/apache-atlas"
+    ipc: "private"
+    labels:
+      maintainer: "vadim@clusterside.com"
+    logging:
+      driver: "json-file"
+      options: {}
+    mac_address: " "
+    network_mode: "bridge"
+    ports:
+      - "21000:21000/tcp"
+    working_dir: "/apache-atlas/bin"
+    
+    
+    
   grafana:
     container_name: "grafana"
     entrypoint:
@@ -46,15 +77,15 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:07"
+    mac_address: " "
     network_mode: "bridge"
     ports:
       - "3000:3000/tcp"
     user: "472"
     working_dir: "/usr/share/grafana"
-
-
-
+    
+    
+    
   kafka-container:
     command:
       - "/etc/kafka/server.properties"
@@ -62,13 +93,15 @@ services:
     entrypoint:
       - "entrypoint.sh"
     environment:
-      - "KAFKA_ADVERTISED_HOST_NAME=172.17.0.5"
-      - "KAFKA_ADVERTISED_PORT=9092"
-      - "ZOOKEEPER_HOST=172.17.0.3"
-      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "TZ=UTC"
+      - "KAFKA_ADVERTISED_HOST_NAME=host.docker.internal"
+      - "KAFKA_ADVERTISED_PORT=9092"
+      - "ZOOKEEPER_HOST=host.docker.internal"
+      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "ZOOKEEPER_PORT=2181"
-    hostname: "705555bd1adb"
+    expose:
+      - "9092/tcp"
+    hostname: "blackjack"
     image: "ubuntu/kafka:latest"
     ipc: "private"
     labels:
@@ -78,14 +111,12 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:06"
-    network_mode: "bridge"
-    ports:
-      - "9092:9092/tcp"
+    network_mode: "host"
     volumes:
       - "volume-STREAM-IUBH:/data_streaming_project"
-
-
+      
+      
+      
   node-exporter-prometheus:
     command:
       - "--path.rootfs=/host"
@@ -110,8 +141,9 @@ services:
     user: "nobody"
     volumes:
       - "/:/host:ro"
-
-
+      
+      
+      
   phpmyadmin:
     command:
       - "apache2-foreground"
@@ -160,14 +192,15 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:05"
+    mac_address: " "
     network_mode: "bridge"
     ports:
       - "8085:80/tcp"
     restart: "always"
     working_dir: "/var/www/html"
-
-
+    
+    
+    
   prometheus:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -179,7 +212,7 @@ services:
       - "/bin/prometheus"
     environment:
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    hostname: "0114b5d90996"
+    hostname: "39bd93ffa978"
     image: "prom/prometheus"
     ipc: "private"
     labels:
@@ -187,17 +220,18 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:08"
+    mac_address: " "
     network_mode: "bridge"
     ports:
       - "9090:9090/tcp"
     user: "nobody"
     volumes:
       - "/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH/data_streaming_project/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-      - "e55e0b4e9ad93ee7797db235a730e945750bd5b42c544cda4eee5d580561c9f1:/prometheus"
+      - "2448cfada8fe69b711e5661980beaa04ce62065b384444038ae9808a0f29d636:/prometheus"
     working_dir: "/prometheus"
-
-
+    
+    
+    
   pyspark-elyra:
     command:
       - "start-notebook.sh"
@@ -236,7 +270,7 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:02"
+    mac_address: " "
     network_mode: "bridge"
     ports:
       - "8888:8888/tcp"
@@ -246,7 +280,8 @@ services:
     volumes:
       - "/home/blackjack/Data-Streaming-ETL-IUBH-main/Data-Streaming-ETL-IUBH:/home/jovyan/work"
     working_dir: "/home/jovyan"
-
+    
+    
     
   zookeeper-container:
     command:
@@ -255,9 +290,9 @@ services:
     entrypoint:
       - "/opt/kafka/bin/zookeeper-server-start.sh"
     environment:
-      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       - "TZ=UTC"
-    hostname: "d3ae1dbd2d31"
+      - "PATH=/opt/kafka/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    hostname: "b46154020da4"
     image: "ubuntu/zookeeper:latest"
     ipc: "private"
     labels:
@@ -267,14 +302,18 @@ services:
     logging:
       driver: "json-file"
       options: {}
-    mac_address: "02:42:ac:11:00:03"
-    network_mode: "bridge"
+    networks:
+      - "kafka-net"
     ports:
       - "2181:2181/tcp"
+networks:
+  kafka-net:
+    external: true
+    name: "kafka-net"
 volumes:
   1117dd6aac2f2a558c3f6b23c287c1d765ed46330ce5b8da286834225747433e:
     external: true
-  e55e0b4e9ad93ee7797db235a730e945750bd5b42c544cda4eee5d580561c9f1:
+  2448cfada8fe69b711e5661980beaa04ce62065b384444038ae9808a0f29d636:
     external: true
   volume-STREAM-IUBH:
     external: true
